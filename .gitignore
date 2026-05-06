@@ -1,0 +1,18 @@
+# WoW Addon specific
+*.swp
+*.swo
+*~
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build
+build/
+dist/
+
+# Logs
+*.log
