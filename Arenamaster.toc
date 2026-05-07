@@ -35,6 +35,7 @@ modules/threat.lua
 modules/predictor.lua
 modules/analytics.lua
 modules/arenaintelligence.lua
+modules/opponent-spec-detection.lua
 
 ## TIER 3: Notifications & Display (Depends on Tier 0-2)
 modules/notifications.lua
@@ -46,3 +47,4 @@ modules/arenaintelligence-ui.lua
 modules/profiler.lua
 modules/predictor_match.lua
 modules/goals.lua
+modules/arenaintelligence-summary.lua
