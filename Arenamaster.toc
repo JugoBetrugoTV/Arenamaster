@@ -1,8 +1,12 @@
 ## Interface: 120005
-## Title: Arenamaster
-## Notes: Eine umfassende PvP-Erweiterung für World of Warcraft
+## Title: Arenamaster - PvP Arena Assistant
+## Notes: Eine umfassende PvP-Erweiterung für World of Warcraft 12.0.5
 ## Author: JugoBetrugoTV
 ## Version: 1.0.0
 ## SavedVariables: ArenamasterDB
 
 Arenamaster.lua
+
+modules/opponents.lua
+modules/cooldowns.lua
+modules/rating.lua
