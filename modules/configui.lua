@@ -80,11 +80,17 @@ function ConfigUI:CreateConfigWindow()
     self:CreatePresetsSection(sidebar)
     self:CreateCategoriesSection(sidebar)
 
-    -- Main Content Area
-    local content = CreateFrame("Frame", nil, configFrame)
-    content:SetSize(800, 650)
-    content:SetPoint("TOPLEFT", sidebar, "TOPRIGHT", 5, 0)
+    -- Main Content Area with Scroll Support
+    local scrollFrame = CreateFrame("ScrollFrame", nil, configFrame, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetSize(800, 650)
+    scrollFrame:SetPoint("TOPLEFT", sidebar, "TOPRIGHT", 5, 0)
+
+    local content = CreateFrame("Frame", nil, scrollFrame)
+    content:SetSize(780, 1)  -- Height will expand dynamically
+    scrollFrame:SetScrollChild(content)
+
     configFrame.contentFrame = content
+    configFrame.scrollFrame = scrollFrame
 
     self:RefreshContent(content)
 
@@ -410,6 +416,12 @@ function ConfigUI:RefreshContent(contentFrame)
         end
 
         yOffset = yOffset - 10
+    end
+
+    -- Set content frame height based on content
+    contentFrame:SetHeight(math.abs(yOffset) + 50)
+    if configFrame.scrollFrame then
+        configFrame.scrollFrame:SetVerticalScroll(0)
     end
 end
 
