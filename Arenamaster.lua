@@ -104,7 +104,6 @@ function Arenamaster:SetupOptions()
 	self:RegisterChatCommand("am", "HandleChatCommand")
 	self:RegisterChatCommand("arenamaster", "HandleChatCommand")
 end
-end
 
 function Arenamaster:HandleChatCommand(input)
 	input = input and input:trim() or ""
