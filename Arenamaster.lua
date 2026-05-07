@@ -150,8 +150,10 @@ function Arenamaster:SetupOptions()
 	AceConfig:RegisterOptionsTable(ADDON_NAME, options)
 
 	local dialog = self:GetAceConfigDialog()
-	if dialog then
-		dialog:AddToBlizOptions(ADDON_NAME, ADDON_NAME)
+	if dialog and dialog.AddToBlizOptions then
+		pcall(function()
+			dialog:AddToBlizOptions(ADDON_NAME, ADDON_NAME)
+		end)
 	end
 
 	self:RegisterChatCommand("am", "HandleChatCommand")

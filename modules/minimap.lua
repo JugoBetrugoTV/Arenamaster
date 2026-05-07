@@ -44,11 +44,15 @@ function MinimapIcon:OnEnable()
 end
 
 function MinimapIcon:CreateMinimapIcon()
-	if Minimap:GetObjectByID and Minimap:GetObjectByID("Arenamaster") then
+	local button = _G["ArenamasterMinimapButton"]
+	if button and button:IsVisible() then
 		return
 	end
 
-	local button = CreateFrame("Button", "ArenamasterMinimapButton", Minimap)
+	if button then
+		button:Show()
+		return
+	end
 	button:SetFrameLevel(8)
 	button:SetSize(36, 36)
 	button:SetFrameStrata("MEDIUM")
