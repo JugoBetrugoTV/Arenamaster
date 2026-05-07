@@ -2,7 +2,7 @@
 ## Title: Arenamaster - PvP Arena Assistant
 ## Notes: Eine umfassende PvP-Erweiterung für World of Warcraft 12.0.5
 ## Author: JugoBetrugoTV
-## Version: 4.0.0
+## Version: 2.0.0-Ace3
 ## SavedVariables: ArenamasterDB
 ## OptionalDeps: Ace3
 
