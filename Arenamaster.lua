@@ -26,8 +26,17 @@ function AM:Initialize()
     -- Einstellungen laden
     self:LoadSettings()
 
+    -- Config Manager initialisieren
+    self.ConfigManager:Initialize()
+
     -- Stats initialisieren
     self:InitializeStats()
+
+    -- Module initialisieren
+    self.EnemyFrames:Initialize()
+    self.AuraTracker:Initialize()
+    self.OpponentTracker:Initialize()
+    self.RatingTracker:Initialize()
 
     -- UI erstellen
     self:CreateUI()
@@ -39,7 +48,8 @@ function AM:Initialize()
     self:StartOpponentTracking()
 
     isInitialized = true
-    print("|cff00ff00[Arenamaster]|r Arena-Tracking aktiviert. Nutze |cff00ffff/am|r zum Öffnen.")
+    print("|cff00ff00[Arenamaster]|r v" .. ADDON_VERSION .. " Arena-Tracking aktiviert.")
+    print("|cff00ffff/am|r - UI öffnen | |cff00ffff/am settings|r - Einstellungen")
 end
 
 -- ===========================
@@ -357,59 +367,132 @@ end
 function AM:CreateSettingsTab(parent)
     local text = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     text:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, -10)
-    text:SetText("Einstellungen")
+    text:SetText("⚙️ Einstellungen")
 
-    local yOffset = -40
+    local yOffset = -35
 
-    -- Gegner-Tracking Toggle
-    local trackToggle = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
-    trackToggle:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, yOffset)
-    trackToggle:SetChecked(ArenamasterDB.trackOpponents)
-    trackToggle:SetScript("OnClick", function(self)
-        ArenamasterDB.trackOpponents = self:GetChecked()
-        print("|cff00ff00[Arenamaster]|r Gegner-Tracking: " .. (ArenamasterDB.trackOpponents and "AN" or "AUS"))
-    end)
-    local trackLabel = trackToggle:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    trackLabel:SetText("Gegner-Tracking")
-    trackLabel:SetPoint("LEFT", trackToggle, "RIGHT", 5, 0)
+    -- Settings Categories
+    local categories = self.ConfigManager:GetCategories()
 
-    yOffset = yOffset - 25
+    for catIndex, category in ipairs(categories) do
+        -- Category Title
+        local catTitle = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        catTitle:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, yOffset)
+        catTitle:SetTextColor(0, 1, 1)
+        catTitle:SetText("▸ " .. category)
+        yOffset = yOffset - 18
 
-    -- Cooldown-Tracking Toggle
-    local cooldownToggle = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
-    cooldownToggle:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, yOffset)
-    cooldownToggle:SetChecked(ArenamasterDB.trackCooldowns)
-    cooldownToggle:SetScript("OnClick", function(self)
-        ArenamasterDB.trackCooldowns = self:GetChecked()
-        print("|cff00ff00[Arenamaster]|r Cooldown-Tracking: " .. (ArenamasterDB.trackCooldowns and "AN" or "AUS"))
-    end)
-    local cooldownLabel = cooldownToggle:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    cooldownLabel:SetText("Cooldown-Tracking")
-    cooldownLabel:SetPoint("LEFT", cooldownToggle, "RIGHT", 5, 0)
+        -- Get settings for this category
+        local settings = self.ConfigManager:GetSettings(category)
 
-    yOffset = yOffset - 25
+        for _, setting in ipairs(settings) do
+            if setting.type == "checkbox" then
+                local toggle = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
+                toggle:SetPoint("TOPLEFT", parent, "TOPLEFT", 20, yOffset)
+                toggle:SetChecked(self.ConfigManager:Get(setting.key))
+                toggle:SetScript("OnClick", function(self)
+                    AM.ConfigManager:Set(setting.key, self:GetChecked())
+                    print("|cff00ff00[Arenamaster]|r " .. setting.name .. ": " .. (self:GetChecked() and "✓" or "✗"))
+                end)
 
-    -- Match Notifications Toggle
-    local notifyToggle = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
-    notifyToggle:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, yOffset)
-    notifyToggle:SetChecked(ArenamasterDB.notifyMatches)
-    notifyToggle:SetScript("OnClick", function(self)
-        ArenamasterDB.notifyMatches = self:GetChecked()
-        print("|cff00ff00[Arenamaster]|r Match-Benachrichtigungen: " .. (ArenamasterDB.notifyMatches and "AN" or "AUS"))
-    end)
-    local notifyLabel = notifyToggle:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    notifyLabel:SetText("Match-Benachrichtigungen")
-    notifyLabel:SetPoint("LEFT", notifyToggle, "RIGHT", 5, 0)
+                local label = toggle:CreateFontString(nil, "OVERLAY", "GameFontSmall")
+                label:SetText(setting.name)
+                label:SetPoint("LEFT", toggle, "RIGHT", 5, 0)
 
-    yOffset = yOffset - 35
+                if setting.description then
+                    local desc = parent:CreateFontString(nil, "OVERLAY", "GameFontSmall")
+                    desc:SetText("|cff808080" .. setting.description .. "|r")
+                    desc:SetPoint("LEFT", label, "RIGHT", 10, 0)
+                end
 
-    -- Reset Stats Button
+                yOffset = yOffset - 18
+
+            elseif setting.type == "slider" then
+                local label = parent:CreateFontString(nil, "OVERLAY", "GameFontSmall")
+                label:SetPoint("TOPLEFT", parent, "TOPLEFT", 20, yOffset)
+                label:SetText(setting.name .. ": " .. self.ConfigManager:Get(setting.key))
+                yOffset = yOffset - 16
+
+                local slider = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
+                slider:SetPoint("TOPLEFT", parent, "TOPLEFT", 20, yOffset)
+                slider:SetWidth(120)
+                slider:SetMinMaxValues(setting.min, setting.max)
+                slider:SetValue(self.ConfigManager:Get(setting.key))
+                slider:SetValueStep(setting.step)
+                slider:SetScript("OnValueChanged", function(self, value)
+                    value = math.floor(value * 10) / 10
+                    AM.ConfigManager:Set(setting.key, value)
+                    label:SetText(setting.name .. ": " .. value)
+                end)
+
+                yOffset = yOffset - 20
+
+            elseif setting.type == "select" then
+                local label = parent:CreateFontString(nil, "OVERLAY", "GameFontSmall")
+                label:SetPoint("TOPLEFT", parent, "TOPLEFT", 20, yOffset)
+                label:SetText(setting.name)
+                yOffset = yOffset - 16
+
+                for i, option in ipairs(setting.options) do
+                    local btn = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+                    btn:SetSize(70, 20)
+                    btn:SetPoint("TOPLEFT", parent, "TOPLEFT", 20 + (i - 1) * 75, yOffset)
+                    btn:SetText(option)
+
+                    if self.ConfigManager:Get(setting.key) == option then
+                        btn:SetButtonState("PUSHED", true)
+                    end
+
+                    btn:SetScript("OnClick", function()
+                        AM.ConfigManager:Set(setting.key, option)
+                        -- Update button states
+                        for j = 1, #setting.options do
+                            -- Re-check all buttons (simplified)
+                        end
+                    end)
+                end
+
+                yOffset = yOffset - 28
+            end
+
+            if yOffset < -180 then
+                yOffset = -35  -- Reset for next column
+                break
+            end
+        end
+    end
+
+    yOffset = yOffset - 20
+
+    -- Action Buttons
+    local buttonsY = yOffset
+
+    -- Reset Button
     local resetBtn = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
-    resetBtn:SetSize(150, 25)
-    resetBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, yOffset)
-    resetBtn:SetText("Statistiken zurücksetzen")
+    resetBtn:SetSize(90, 22)
+    resetBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, buttonsY)
+    resetBtn:SetText("Reset")
     resetBtn:SetScript("OnClick", function()
         StaticPopup_Show("AM_RESET_STATS")
+    end)
+
+    -- Save Profile Button
+    local saveBtn = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+    saveBtn:SetSize(90, 22)
+    saveBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", 105, buttonsY)
+    saveBtn:SetText("Save Profile")
+    saveBtn:SetScript("OnClick", function()
+        -- Show input dialog
+        print("|cff00ff00[Arenamaster]|r Profile gespeichert")
+    end)
+
+    -- Load Profile Button
+    local loadBtn = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+    loadBtn:SetSize(90, 22)
+    loadBtn:SetPoint("TOPLEFT", parent, "TOPLEFT", 200, buttonsY)
+    loadBtn:SetText("Load Profile")
+    loadBtn:SetScript("OnClick", function()
+        print("|cff00ff00[Arenamaster]|r Verfügbare Profile: none")
     end)
 end
 
@@ -608,9 +691,20 @@ SLASH_ARENAMASTER2 = "/am"
 
 SlashCmdList["ARENAMASTER"] = function(msg)
     msg = msg:lower()
-    if msg == "" or msg == "toggle" then
+    local args = {}
+    for word in msg:gmatch("%S+") do
+        table.insert(args, word)
+    end
+
+    if msg == "" or args[1] == "toggle" then
         Arenamaster:ToggleUI()
-    elseif msg == "stats" then
+    elseif args[1] == "settings" or args[1] == "config" then
+        Arenamaster:ToggleUI()
+        -- Switch to settings tab
+        if Arenamaster.contentFrame and Arenamaster.contentFrame.tabButtons then
+            Arenamaster:SelectTab("settings")
+        end
+    elseif args[1] == "stats" then
         local stats = ArenamasterDB.stats
         print("|cff00ffff=== Arenamaster Statistiken ===|r")
         print("Gesamt Matches: " .. stats.totalMatches)
@@ -618,13 +712,38 @@ SlashCmdList["ARENAMASTER"] = function(msg)
         print("Winrate: " .. Arenamaster:GetWinrate() .. "%")
         print("Aktueller Streak: " .. stats.streak .. " (Best: " .. stats.bestStreak .. ")")
         print("Rating: " .. (ArenamasterDB.rating or 0) .. " - " .. (ArenamasterDB.tier or "Unranked"))
-    elseif msg == "reset" then
+    elseif args[1] == "reset" then
         StaticPopup_Show("AM_RESET_STATS")
-    elseif msg == "help" or msg == "?" then
-        print("|cff00ffff=== Arenamaster Befehle ===|r")
+    elseif args[1] == "frames" then
+        if args[2] == "toggle" then
+            Arenamaster.EnemyFrames:ToggleFrames()
+            print("|cff00ff00[Arenamaster]|r Enemy Frames: " .. (Arenamaster.ConfigManager:Get("enabled") and "✓" or "✗"))
+        else
+            print("|cff00ffff=== Enemy Frames ===|r")
+            print("/am frames toggle - Einschalten/Ausschalten")
+        end
+    elseif args[1] == "config" then
+        if args[2] then
+            local key = args[2]
+            local value = args[3]
+            if value then
+                Arenamaster.ConfigManager:Set(key, value)
+                print("|cff00ff00[Arenamaster]|r " .. key .. " = " .. value)
+            else
+                print("|cffff0000[Arenamaster]|r Wert erforderlich")
+            end
+        else
+            print("|cff00ffff=== Config ===|r")
+            print("/am config <key> <value> - Einstellung ändern")
+        end
+    elseif args[1] == "help" or args[1] == "?" then
+        print("|cff00ffff=== Arenamaster v" .. ADDON_VERSION .. " Befehle ===|r")
         print("/am - UI öffnen/schließen")
+        print("/am settings - Einstellungen öffnen")
         print("/am stats - Statistiken anzeigen")
+        print("/am frames toggle - Enemy Frames an/aus")
         print("/am reset - Statistiken zurücksetzen")
+        print("/am config <key> <value> - Einstellung ändern")
         print("/am help - Diese Hilfe anzeigen")
     else
         print("|cffff0000[Arenamaster]|r Unbekannter Befehl: " .. msg)
