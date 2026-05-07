@@ -498,19 +498,20 @@ function AM:OnMatchBegin()
         startTime = matchStartTime,
         opponents = {},
         myTeam = {},
-        duration = 0
+        duration = 0,
+        waitingForSpecs = true
     }
 
-    -- Gegner auslesen
+    -- Gegner-Namen sammeln (Specs werden später via Event geladen)
     for i = 1, 5 do
-        local name = GetArenaOpponentSpec(i)
+        local name = GetUnitName("arena" .. i)
         if name then
             table.insert(currentMatch.opponents, name)
         end
     end
 
     if ArenamasterDB.notifyMatches then
-        print("|cff00ff00[Arenamaster]|r Arena-Match beginnt! Gegner: " .. table.concat(currentMatch.opponents, ", "))
+        print("|cff00ff00[Arenamaster]|r Arena-Match beginnt! Gegner werden geladen...")
     end
 
     self:UpdateUI()
@@ -539,11 +540,12 @@ end
 function AM:UpdateOpponentInfo()
     if not currentMatch then return end
 
-    for i = 1, 5 do
-        local specId, specName = GetArenaOpponentSpec(i)
-        if specName then
-            currentMatch.opponents[i] = specName
-        end
+    -- Opponent specs werden via ARENA_PREP_OPPONENT_SPECIALIZATIONS event geladen
+    -- Diese Funktion aktualisiert die UI wenn neue Gegner-Infos verfügbar sind
+    currentMatch.waitingForSpecs = false
+
+    if ArenamasterDB.notifyMatches and #currentMatch.opponents > 0 then
+        print("|cff00ff00[Arenamaster]|r Gegner: " .. table.concat(currentMatch.opponents, ", "))
     end
 
     self:UpdateUI()
