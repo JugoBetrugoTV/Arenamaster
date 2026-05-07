@@ -19,6 +19,8 @@ modules/opponents.lua
 modules/cooldowns.lua
 modules/rating.lua
 modules/config.lua
+modules/features.lua
+modules/featureconfig.lua
 
 ## TIER 1: UI & Configuration (Depends on Tier 0)
 modules/ace3config.lua
