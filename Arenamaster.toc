@@ -53,3 +53,6 @@ modules/predictor_match.lua
 modules/goals.lua
 modules/arenaintelligence-summary.lua
 modules/arenaintelligence-stats.lua
+modules/arenaintelligence-profiling.lua
+modules/arenaintelligence-predictions.lua
+modules/arenaintelligence-coaching.lua
