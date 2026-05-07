@@ -29,6 +29,7 @@ modules/configadvanced.lua
 modules/dashboard.lua
 modules/auratracker.lua
 modules/enemyframes.lua
+modules/arenaintelligence-config.lua
 
 ## TIER 2: Analysis & Detection (Depends on Tier 0-1)
 modules/threat.lua
