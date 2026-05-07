@@ -34,11 +34,13 @@ modules/enemyframes.lua
 modules/threat.lua
 modules/predictor.lua
 modules/analytics.lua
+modules/arenaintelligence.lua
 
 ## TIER 3: Notifications & Display (Depends on Tier 0-2)
 modules/notifications.lua
 modules/map.lua
 modules/callouts.lua
+modules/arenaintelligence-ui.lua
 
 ## TIER 4: AI & Intelligence (Depends on Tier 0-2)
 modules/profiler.lua

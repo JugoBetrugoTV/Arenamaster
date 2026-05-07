@@ -334,6 +334,78 @@ local FEATURE_REGISTRY = {
 			cloud_sync = false,
 		}
 	},
+
+	-- ARENA INTELLIGENCE FEATURES
+	{
+		id = "diminishing_returns_ui",
+		name = "DR Display",
+		category = "Intelligence",
+		description = "Display diminishing returns status on enemy frames",
+		icon = "📉",
+		enabled = true,
+		settings = {
+			show_dr_percentage = true,
+			dr_warning_threshold = 50,
+			highlight_low_dr = true,
+		}
+	},
+
+	{
+		id = "threat_assessment_ui",
+		name = "Threat Assessment Display",
+		category = "Intelligence",
+		description = "Show threat level indicators on enemy frames with multi-factor analysis",
+		icon = "⚠️",
+		enabled = true,
+		settings = {
+			show_threat_bar = true,
+			threat_update_rate = 0.5,
+			color_by_threat = true,
+		}
+	},
+
+	{
+		id = "interrupt_prediction_ui",
+		name = "Interrupt Predictions",
+		category = "Intelligence",
+		description = "Display interrupt availability predictions with confidence scoring",
+		icon = "🔮",
+		enabled = true,
+		settings = {
+			show_predictions = true,
+			show_confidence = true,
+			update_frequency = 1.0,
+		}
+	},
+
+	{
+		id = "combat_analytics_display",
+		name = "Real-Time Analytics Panel",
+		category = "Analytics",
+		description = "Display live DPS, HPS, CC counts, and match duration",
+		icon = "📊",
+		enabled = true,
+		settings = {
+			show_dps = true,
+			show_hps = true,
+			show_cc_stats = true,
+			show_duration = true,
+		}
+	},
+
+	{
+		id = "arena_intelligence_engine",
+		name = "Arena Intelligence Core",
+		category = "Intelligence",
+		description = "Enable all Arena Intelligence systems (DR, threats, interrupts, analytics)",
+		icon = "🧠",
+		enabled = true,
+		settings = {
+			tracking_enabled = true,
+			debug_output = false,
+			performance_mode = "balanced",
+		}
+	},
 }
 
 -- ===========================
