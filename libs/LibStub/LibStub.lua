@@ -1,60 +1,30 @@
--- LibStub: A simple versioning library made for addons
--- See https://www.wowpedia.org/LibStub
-
-local LIBSTUB_MAJOR, LIBSTUB_MINOR = "LibStub", 4
+-- LibStub is a simple versioning stub meant for use in Libraries.  http://www.wowace.com/wiki/LibStub for more info
+-- LibStub is hereby placed in the Public Domain Credits: Kaelten, Cladhaire, ckknight, Mikk, Ammo, Nevcairiel, joshborke
+local LIBSTUB_MAJOR, LIBSTUB_MINOR = "LibStub", 2  -- NEVER MAKE THIS AN SVN REVISION! IT NEEDS TO BE USABLE IN ALL REPOS!
 local LibStub = _G[LIBSTUB_MAJOR]
 
-if LibStub and LibStub.GetLibrary and LibStub:GetLibrary(LIBSTUB_MAJOR).minor >= LIBSTUB_MINOR then
-	return
-end
-
-if not LibStub then
-	LibStub = CreateFrame("Frame")
-	LibStub:Hide()
+if not LibStub or LibStub.minor < LIBSTUB_MINOR then
+	LibStub = LibStub or {libs = {}, minors = {} }
 	_G[LIBSTUB_MAJOR] = LibStub
-end
-
-local _G = _G
-local tostring = _G.tostring
-local type = _G.type
-local next = _G.next
-local pairs = _G.pairs
-local select = _G.select
-
-local libs = {}
-LibStub.libs = libs
-
-function LibStub:NewLibrary(major, minor)
-	assert(type(major) == "string", "Bad argument #1 to `NewLibrary' (expected string, got " .. type(major) .. ")")
-	if not minor then minor = 1 else
-		assert(type(minor) == "number", "Bad argument #2 to `NewLibrary' (expected number, got " .. type(minor) .. ")")
+	LibStub.minor = LIBSTUB_MINOR
+	
+	function LibStub:NewLibrary(major, minor)
+		assert(type(major) == "string", "Bad argument #2 to `NewLibrary' (string expected)")
+		minor = assert(tonumber(strmatch(minor, "%d+")), "Minor version must either be a number or contain a number.")
+		
+		local oldminor = self.minors[major]
+		if oldminor and oldminor >= minor then return nil end
+		self.minors[major], self.libs[major] = minor, self.libs[major] or {}
+		return self.libs[major], oldminor
 	end
-
-	local oldminor = self.minors[major]
-	if oldminor and oldminor >= minor then return nil end
-
-	libs[major] = {}
-	self.minors[major] = minor
-
-	return libs[major], minor
-end
-
-function LibStub:GetLibrary(major, silent)
-	if not type(major) == "string" then
-		error(("Bad argument #1 to `GetLibrary' (expected string, got %s)"):format(type(major)), 2)
+	
+	function LibStub:GetLibrary(major, silent)
+		if not self.libs[major] and not silent then
+			error(("Cannot find a library instance of %q."):format(tostring(major)), 2)
+		end
+		return self.libs[major], self.minors[major]
 	end
-	if libs[major] then
-		return libs[major]
-	end
-	if not silent then
-		error(("Cannot find a library instance of %q."):format(tostring(major)), 2)
-	end
+	
+	function LibStub:IterateLibraries() return pairs(self.libs) end
+	setmetatable(LibStub, { __call = LibStub.GetLibrary })
 end
-
-function LibStub:IterateLibraries()
-	return next, libs
-end
-
-LibStub.minors = {}
-LibStub.LIBSTUB_MAJOR = LIBSTUB_MAJOR
-LibStub.LIBSTUB_MINOR = LIBSTUB_MINOR
