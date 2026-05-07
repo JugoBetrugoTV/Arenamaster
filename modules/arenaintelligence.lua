@@ -268,6 +268,10 @@ end
 -- ===========================
 
 function ArenaIntelligence:StartMatchAnalytics()
+	if not Arenamaster or not Arenamaster.db or not Arenamaster.db.profile then
+		return
+	end
+
 	Arenamaster.db.profile.arenaStats = {
 		matchStartTime = GetTime(),
 		damageDealt = 0,
@@ -284,6 +288,21 @@ function ArenaIntelligence:StartMatchAnalytics()
 end
 
 function ArenaIntelligence:LogCombatEvent(eventType, source, target, spell, amount)
+	if not Arenamaster or not Arenamaster.db or not Arenamaster.db.profile then
+		return
+	end
+
+	if not Arenamaster.db.profile.arenaStats then
+		Arenamaster.db.profile.arenaStats = {
+			damageDealt = 0,
+			damageTaken = 0,
+			healingDone = 0,
+			ccsApplied = 0,
+			ccsReceived = 0,
+			events = {},
+		}
+	end
+
 	if not Arenamaster.db.profile.arenaStats.events then
 		Arenamaster.db.profile.arenaStats.events = {}
 	end
@@ -325,10 +344,16 @@ function ArenaIntelligence:LogCombatEvent(eventType, source, target, spell, amou
 end
 
 function ArenaIntelligence:GetMatchStats()
+	if not Arenamaster or not Arenamaster.db or not Arenamaster.db.profile then
+		return {}
+	end
 	return CopyTable(Arenamaster.db.profile.arenaStats or {})
 end
 
 function ArenaIntelligence:GetDPS()
+	if not Arenamaster or not Arenamaster.db or not Arenamaster.db.profile then
+		return 0
+	end
 	local stats = Arenamaster.db.profile.arenaStats
 	if not stats or not stats.matchStartTime then
 		return 0
@@ -343,6 +368,9 @@ function ArenaIntelligence:GetDPS()
 end
 
 function ArenaIntelligence:GetHPS()
+	if not Arenamaster or not Arenamaster.db or not Arenamaster.db.profile then
+		return 0
+	end
 	local stats = Arenamaster.db.profile.arenaStats
 	if not stats or not stats.matchStartTime then
 		return 0
