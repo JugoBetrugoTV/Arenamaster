@@ -21,6 +21,7 @@ modules/config.lua
 ## TIER 1: UI & Configuration (Depends on Tier 0)
 modules/ace3config.lua
 modules/configui.lua
+modules/configadvanced.lua
 modules/auratracker.lua
 modules/enemyframes.lua
 

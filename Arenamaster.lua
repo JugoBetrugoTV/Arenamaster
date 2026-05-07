@@ -143,8 +143,57 @@ function Arenamaster:SetupOptions()
 end
 
 function Arenamaster:HandleChatCommand(input)
-	if not input or input:trim() == "" then
+	input = input and input:trim() or ""
+
+	if input == "" or input == "config" then
+		-- Open beautiful config UI
+		local ConfigUI = self:GetModule("ConfigUI")
+		if ConfigUI then
+			ConfigUI:ShowConfigWindow()
+		else
+			AceConfigDialog:Open(ADDON_NAME)
+		end
+	elseif input == "advanced" then
+		-- Open advanced options
 		AceConfigDialog:Open(ADDON_NAME)
+	elseif input == "export" then
+		-- Export settings
+		local ConfigAdvanced = self:GetModule("ConfigAdvanced")
+		if ConfigAdvanced then
+			ConfigAdvanced:ShowExportDialog()
+		end
+	elseif input == "import" then
+		-- Import settings
+		local ConfigAdvanced = self:GetModule("ConfigAdvanced")
+		if ConfigAdvanced then
+			ConfigAdvanced:ShowImportDialog()
+		end
+	elseif input == "preset" then
+		print("|cff00ff00Available presets:|r")
+		local ConfigMod = self:GetModule("Config")
+		if ConfigMod then
+			for name, preset in pairs(ConfigMod:GetPresets()) do
+				print("  |cff00aeff" .. name .. "|r - " .. preset.description)
+			end
+		end
+	elseif input:sub(1, 6) == "preset" then
+		local presetName = input:sub(8):upper()
+		local ConfigMod = self:GetModule("Config")
+		if ConfigMod then
+			ConfigMod:ApplyPreset(presetName)
+		end
+	elseif input == "stats" then
+		self:ShowStats()
+	elseif input == "help" then
+		print("|cff00aiffArenamaster Commands:|r")
+		print("  |cffff00ff/am|r or |cffff00ff/am config|r - Open configuration")
+		print("  |cffff00ff/am advanced|r - Advanced options")
+		print("  |cffff00ff/am export|r - Export your settings")
+		print("  |cffff00ff/am import|r - Import settings")
+		print("  |cffff00ff/am preset|r - Show available presets")
+		print("  |cffff00ff/am preset <name>|r - Apply preset")
+		print("  |cffff00ff/am stats|r - Show statistics")
+		print("  |cffff00ff/am help|r - Show this help")
 	else
 		AceConsole:ProcessLine(input)
 	end
