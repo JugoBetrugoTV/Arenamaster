@@ -37,6 +37,9 @@ function AM:Initialize()
     self.AuraTracker:Initialize()
     self.OpponentTracker:Initialize()
     self.RatingTracker:Initialize()
+    self.ThreatDetector:Initialize()
+    self.CooldownPredictor:Initialize()
+    self.CombatAnalytics:Initialize()
 
     -- UI erstellen
     self:CreateUI()
@@ -47,9 +50,16 @@ function AM:Initialize()
     -- Gegner-Tracker starten
     self:StartOpponentTracking()
 
+    -- Periodic updates für Threat Detection
+    C_Timer.After(0.5, function()
+        if currentMatch then
+            AM.ThreatDetector:UpdateAllThreats()
+        end
+    end)
+
     isInitialized = true
     print("|cff00ff00[Arenamaster]|r v" .. ADDON_VERSION .. " Arena-Tracking aktiviert.")
-    print("|cff00ffff/am|r - UI öffnen | |cff00ffff/am settings|r - Einstellungen")
+    print("|cff00ffff/am|r - UI | |cff00ffff/am settings|r - Config | |cff00ffff/am help|r - Commands")
 end
 
 -- ===========================
@@ -272,35 +282,40 @@ end
 function AM:CreateDashboardTab(parent)
     local text = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     text:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, -10)
-    text:SetText("Dashboard")
+    text:SetText("🎯 Dashboard")
+
+    local yOffset = -35
 
     -- Rating und Tier
     local ratingText = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    ratingText:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, -40)
-    ratingText:SetText("Rating: " .. (ArenamasterDB.rating or 0) .. " - " .. (ArenamasterDB.tier or "Unranked"))
+    ratingText:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, yOffset)
+    ratingText:SetText("Rating: |cff00ffff" .. (ArenamasterDB.rating or 0) .. "|r - " .. (ArenamasterDB.tier or "Unranked"))
+    yOffset = yOffset - 20
 
     -- Current Match Status
     local matchStatus = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    matchStatus:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, -65)
+    matchStatus:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, yOffset)
     if currentMatch then
-        matchStatus:SetText("|cff00ff00IN MATCH|r - Gegner: " .. table.concat(currentMatch.opponents or {}, ", "))
+        matchStatus:SetText("|cff00ff00⚔️ IN MATCH|r")
     else
-        matchStatus:SetText("Status: |cff808080Wartend|r")
+        matchStatus:SetText("Status: |cff808080⏸ Wartend|r")
     end
     parent.matchStatus = matchStatus
+    yOffset = yOffset - 20
 
     -- Streak Info
     local streakText = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    streakText:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, -90)
+    streakText:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, yOffset)
     local stats = ArenamasterDB.stats
     local streakColor = stats.streak > 0 and "|cff00ff00" or "|cffff0000"
-    streakText:SetText("Aktueller Streak: " .. streakColor .. stats.streak .. "|r")
+    streakText:SetText("Streak: " .. streakColor .. stats.streak .. "|r (Best: " .. stats.bestStreak .. ")")
     parent.streakText = streakText
+    yOffset = yOffset - 20
 
     -- Performance Bar
     local performanceBar = CreateFrame("StatusBar", nil, parent)
     performanceBar:SetSize(360, 15)
-    performanceBar:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, -120)
+    performanceBar:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, yOffset)
     performanceBar:SetStatusBarTexture("Interface/TargetingFrame/UI-StatusBar")
     performanceBar:SetStatusBarColor(0, 0.8, 1, 0.8)
     performanceBar:SetMinMaxValues(0, 100)
@@ -318,6 +333,55 @@ function AM:CreateDashboardTab(parent)
     perfLabel:SetPoint("CENTER", performanceBar, "CENTER")
     perfLabel:SetText("Winrate: " .. self:GetWinrate() .. "%")
     parent.performanceBar = performanceBar
+    yOffset = yOffset - 25
+
+    -- THREAT DETECTION
+    if currentMatch then
+        local threatTitle = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        threatTitle:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, yOffset)
+        threatTitle:SetText("⚠️ Threat Level")
+        threatTitle:SetTextColor(1, 0, 0)
+        yOffset = yOffset - 18
+
+        local focusRec = self.ThreatDetector:GetFocusRecommendation()
+        if focusRec then
+            local focusText = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            focusText:SetPoint("TOPLEFT", parent, "TOPLEFT", 15, yOffset)
+            local threatColor = self.ThreatDetector:GetThreatText(focusRec.score)
+            focusText:SetText(threatColor .. " Focus: |cffff8000" .. focusRec.name .. "|r")
+            yOffset = yOffset - 18
+        end
+
+        -- Next threats
+        local threats = self.ThreatDetector:GetAllThreats()
+        for i = 1, math.min(2, #threats) do
+            local threat = threats[i]
+            local threatText = parent:CreateFontString(nil, "OVERLAY", "GameFontSmall")
+            threatText:SetPoint("TOPLEFT", parent, "TOPLEFT", 15, yOffset)
+            local threatColor = self.ThreatDetector:GetFrameColor(threat.unit)
+            threatText:SetText(string.format("|cff%02x%02x%02x#%d: %.1f|r %s",
+                threatColor.r * 255, threatColor.g * 255, threatColor.b * 255,
+                threat.index, threat.threat, threat.name))
+            yOffset = yOffset - 16
+        end
+
+        -- Cooldown Alerts
+        yOffset = yOffset - 5
+        local alertTitle = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        alertTitle:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, yOffset)
+        alertTitle:SetText("⏱️ Cooldowns")
+        alertTitle:SetTextColor(0, 1, 1)
+        yOffset = yOffset - 18
+
+        local alerts = self.CooldownPredictor:GetCriticalAlerts()
+        for i = 1, math.min(2, #alerts) do
+            local alert = alerts[i]
+            local alertText = parent:CreateFontString(nil, "OVERLAY", "GameFontSmall")
+            alertText:SetPoint("TOPLEFT", parent, "TOPLEFT", 15, yOffset)
+            alertText:SetText(string.format("|cffff0000%s|r ready in |cff00ff00%.1fs|r", alert.danger, alert.readyIn))
+            yOffset = yOffset - 16
+        end
+    end
 end
 
 function AM:CreateStatsTab(parent)
@@ -736,15 +800,36 @@ SlashCmdList["ARENAMASTER"] = function(msg)
             print("|cff00ffff=== Config ===|r")
             print("/am config <key> <value> - Einstellung ändern")
         end
+    elseif args[1] == "threat" then
+        if Arenamaster.ThreatDetector then
+            Arenamaster.ThreatDetector:PrintThreatAnalysis()
+        end
+    elseif args[1] == "cooldowns" then
+        if Arenamaster.CooldownPredictor then
+            Arenamaster.CooldownPredictor:PrintCooldownAnalysis()
+        end
+    elseif args[1] == "match" then
+        if Arenamaster.CombatAnalytics then
+            Arenamaster.CombatAnalytics:PrintMatchSummary()
+        end
     elseif args[1] == "help" or args[1] == "?" then
         print("|cff00ffff=== Arenamaster v" .. ADDON_VERSION .. " Befehle ===|r")
-        print("/am - UI öffnen/schließen")
-        print("/am settings - Einstellungen öffnen")
-        print("/am stats - Statistiken anzeigen")
-        print("/am frames toggle - Enemy Frames an/aus")
-        print("/am reset - Statistiken zurücksetzen")
-        print("/am config <key> <value> - Einstellung ändern")
-        print("/am help - Diese Hilfe anzeigen")
+        print("|cff00ff00HAUPTBEFEHLE|r")
+        print("  /am - UI öffnen/schließen")
+        print("  /am settings - Einstellungen öffnen")
+        print("  /am stats - Statistiken anzeigen")
+        print("")
+        print("|cff00ff00COMBAT FEATURES|r")
+        print("  /am threat - Threat-Analyse anzeigen")
+        print("  /am cooldowns - Cooldown-Überblick")
+        print("  /am match - Match-Zusammenfassung")
+        print("")
+        print("|cff00ff00KONFIGURATION|r")
+        print("  /am frames toggle - Enemy Frames an/aus")
+        print("  /am reset - Statistiken zurücksetzen")
+        print("  /am config <key> <value> - Einstellung ändern")
+        print("")
+        print("|cff00ffff/am help|r - Diese Hilfe")
     else
         print("|cffff0000[Arenamaster]|r Unbekannter Befehl: " .. msg)
         print("Nutze |cff00ffff/am help|r für Hilfe")
