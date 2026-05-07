@@ -1,4 +1,4 @@
--- Arenamaster: Stunning Configuration UI Module
+-- Arenamaster: Simple Configuration UI Module
 -- Professional, beautiful configuration window with AceGUI
 
 local Arenamaster = LibStub("AceAddon-3.0"):GetAddon("Arenamaster")
@@ -7,19 +7,6 @@ local ConfigUI = Arenamaster:NewModule("ConfigUI", "AceEvent-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 
 local mainFrame = nil
-local presetButtons = {}
-
--- ===========================
--- INITIALIZATION
--- ===========================
-
-function ConfigUI:OnInitialize()
-	-- UI initialized
-end
-
-function ConfigUI:OnEnable()
-	self:RegisterEvent("PLAYER_LOGIN")
-end
 
 -- ===========================
 -- MAIN CONFIG WINDOW
@@ -32,271 +19,186 @@ function ConfigUI:CreateBeautifulConfigWindow()
 	end
 
 	mainFrame = AceGUI:Create("Frame")
-	mainFrame:SetTitle("|cff00aaffArenamaster|r Configuration v|cff00ff002.0.0-Ace3|r")
+	mainFrame:SetTitle("|cff00aaffArenamaster Configuration v2.0.0-Ace3|r")
 	mainFrame:SetStatusText("Professional PvP Arena Assistant")
 	mainFrame:SetCallback("OnClose", function(widget)
 		AceGUI:Release(widget)
 		mainFrame = nil
 	end)
 	mainFrame:SetLayout("Flow")
-	mainFrame:SetWidth(1000)
-	mainFrame:SetHeight(750)
+	mainFrame:SetWidth(900)
+	mainFrame:SetHeight(600)
+	mainFrame:SetPoint("CENTER")
 
 	-- ===========================
-	-- HEADER SECTION
+	-- TITLE
 	-- ===========================
 
-	local headerGroup = AceGUI:Create("SimpleGroup")
-	headerGroup:SetFullWidth(true)
-	headerGroup:SetHeight(80)
-	headerGroup:SetLayout("Flow")
-	mainFrame:AddChild(headerGroup)
-
-	-- Logo text
-	local logoLabel = AceGUI:Create("Label")
-	logoLabel:SetText("|cff00auff⚔️  ARENAMASTER  ⚔️|r")
-	logoLabel:SetFont(nil, 16, "outline")
-	logoLabel:SetFullWidth(true)
-	headerGroup:AddChild(logoLabel)
-
-	-- Description
-	local descLabel = AceGUI:Create("Label")
-	descLabel:SetText("|cffccccccElevate your PvP game with professional arena intelligence|r")
-	descLabel:SetFont(nil, 12)
-	descLabel:SetFullWidth(true)
-	headerGroup:AddChild(descLabel)
-
-	-- Version info
-	local versionLabel = AceGUI:Create("Label")
-	versionLabel:SetText("|cff4dabf7Version 2.0.0-Ace3  |  Full Ace3 Framework  |  124 Known Spells|r")
-	versionLabel:SetFont(nil, 10)
-	versionLabel:SetFullWidth(true)
-	headerGroup:AddChild(versionLabel)
+	local title = AceGUI:Create("Label")
+	title:SetText("|cff00aeff⚔️  ARENAMASTER CONFIGURATION  ⚔️|r")
+	title:SetFont(nil, 16, "outline")
+	title:SetFullWidth(true)
+	title:SetHeight(40)
+	mainFrame:AddChild(title)
 
 	-- ===========================
-	-- QUICK PRESETS SECTION
+	-- GENERAL SETTINGS
 	-- ===========================
 
-	local presetsHeader = AceGUI:Create("Heading")
-	presetsHeader:SetText("|cff00ffff⚡ QUICK PRESETS|r")
-	presetsHeader:SetFullWidth(true)
-	mainFrame:AddChild(presetsHeader)
+	local generalHeader = AceGUI:Create("Label")
+	generalHeader:SetText("|cff4dabf7🎮 GENERAL SETTINGS|r")
+	generalHeader:SetFont(nil, 14, "outline")
+	generalHeader:SetFullWidth(true)
+	mainFrame:AddChild(generalHeader)
 
-	local presetGroup = AceGUI:Create("SimpleGroup")
-	presetGroup:SetFullWidth(true)
-	presetGroup:SetHeight(100)
-	presetGroup:SetLayout("Flow")
-	mainFrame:AddChild(presetGroup)
-
-	-- Preset buttons
-	local presets = {
-		{
-			name = "🔥 Aggressive",
-			desc = "Large frames, max visibility\nPerfect for aggressive playstyle",
-			key = "AGGRESSIVE"
-		},
-		{
-			name = "⚔️ Competitive",
-			desc = "Balanced setup for ranked\nOptimized for serious play",
-			key = "COMPETITIVE"
-		},
-		{
-			name = "🧘 Minimal",
-			desc = "Clean, distraction-free\nLess UI, more focus",
-			key = "MINIMAL"
-		},
-		{
-			name = "📺 Streamer",
-			desc = "Beautiful, stream-ready\nImpressive for audience",
-			key = "STREAMER"
-		},
-	}
-
-	for i, preset in ipairs(presets) do
-		local btn = AceGUI:Create("Button")
-		btn:SetText(preset.name)
-		btn:SetWidth(200)
-		btn:SetCallback("OnClick", function()
-			self:ApplyPreset(preset.key)
-		end)
-
-		-- Add description as tooltip
-		local tooltip = "|cff00auff" .. preset.name .. "|r\n" .. "|cffcccccc" .. preset.desc .. "|r"
-		btn.userdata.tooltip = tooltip
-
-		presetGroup:AddChild(btn)
-		presetButtons[i] = btn
-	end
-
-	-- ===========================
-	-- QUICK SETTINGS SECTION
-	-- ===========================
-
-	local quickHeader = AceGUI:Create("Heading")
-	quickHeader:SetText("|cff00ff00🎯 QUICK SETTINGS|r")
-	quickHeader:SetFullWidth(true)
-	mainFrame:AddChild(quickHeader)
-
-	-- Frame Layout
-	local layoutLabel = AceGUI:Create("Label")
-	layoutLabel:SetText("Frame Layout:")
-	layoutLabel:SetWidth(100)
-	mainFrame:AddChild(layoutLabel)
-
-	local layoutDropdown = AceGUI:Create("Dropdown")
-	layoutDropdown:SetList({
-		vertical = "Vertical ⬇️",
-		horizontal = "Horizontal ➡️",
-		grid = "Grid 📊"
-	})
-	layoutDropdown:SetValue(Arenamaster.db.profile.frameLayout)
-	layoutDropdown:SetCallback("OnValueChanged", function(widget, event, value)
-		Arenamaster.db.profile.frameLayout = value
-		print("|cff00ff00✓ Layout changed to: " .. value .. "|r")
+	-- Enable/Disable
+	local enabledCheckbox = AceGUI:Create("CheckBox")
+	enabledCheckbox:SetLabel("Enable Addon")
+	enabledCheckbox:SetValue(Arenamaster.db.profile.enabled ~= false)
+	enabledCheckbox:SetCallback("OnValueChanged", function(widget, event, value)
+		Arenamaster.db.profile.enabled = value
 	end)
-	layoutDropdown:SetWidth(150)
-	mainFrame:AddChild(layoutDropdown)
+	enabledCheckbox:SetFullWidth(true)
+	mainFrame:AddChild(enabledCheckbox)
+
+	-- Debug Mode
+	local debugCheckbox = AceGUI:Create("CheckBox")
+	debugCheckbox:SetLabel("Debug Mode")
+	debugCheckbox:SetValue(Arenamaster.db.profile.debugMode or false)
+	debugCheckbox:SetCallback("OnValueChanged", function(widget, event, value)
+		Arenamaster.db.profile.debugMode = value
+	end)
+	debugCheckbox:SetFullWidth(true)
+	mainFrame:AddChild(debugCheckbox)
+
+	-- ===========================
+	-- FRAME SETTINGS
+	-- ===========================
+
+	local frameHeader = AceGUI:Create("Label")
+	frameHeader:SetText("|cff4dabf7🖼️  ENEMY FRAMES|r")
+	frameHeader:SetFont(nil, 14, "outline")
+	frameHeader:SetFullWidth(true)
+	mainFrame:AddChild(frameHeader)
+
+	-- Show Enemy Frames
+	local showFramesCheckbox = AceGUI:Create("CheckBox")
+	showFramesCheckbox:SetLabel("Show Enemy Frames")
+	showFramesCheckbox:SetValue(Arenamaster.db.profile.showEnemyFrames or true)
+	showFramesCheckbox:SetCallback("OnValueChanged", function(widget, event, value)
+		Arenamaster.db.profile.showEnemyFrames = value
+	end)
+	showFramesCheckbox:SetFullWidth(true)
+	mainFrame:AddChild(showFramesCheckbox)
 
 	-- Frame Opacity
-	local opacityLabel = AceGUI:Create("Label")
-	opacityLabel:SetText("Opacity:")
-	opacityLabel:SetWidth(80)
-	mainFrame:AddChild(opacityLabel)
-
 	local opacitySlider = AceGUI:Create("Slider")
-	opacitySlider:SetSliderValues(0.1, 1, 0.05)
-	opacitySlider:SetValue(Arenamaster.db.profile.frameOpacity)
+	opacitySlider:SetLabel("Frame Opacity")
+	opacitySlider:SetSliderValues(0.1, 1.0, 0.05)
+	opacitySlider:SetValue(Arenamaster.db.profile.enemyFrameOpacity or 0.9)
 	opacitySlider:SetCallback("OnValueChanged", function(widget, event, value)
-		Arenamaster.db.profile.frameOpacity = value
+		Arenamaster.db.profile.enemyFrameOpacity = value
 	end)
-	opacitySlider:SetWidth(150)
+	opacitySlider:SetFullWidth(true)
 	mainFrame:AddChild(opacitySlider)
 
-	-- Sound Alerts Toggle
-	local soundToggle = AceGUI:Create("CheckBox")
-	soundToggle:SetLabel("🔊 Sound Alerts")
-	soundToggle:SetValue(Arenamaster.db.profile.soundAlerts)
-	soundToggle:SetCallback("OnValueChanged", function(widget, event, value)
-		Arenamaster.db.profile.soundAlerts = value
+	-- Frame Scale
+	local scaleSlider = AceGUI:Create("Slider")
+	scaleSlider:SetLabel("Frame Scale")
+	scaleSlider:SetSliderValues(0.5, 2.0, 0.1)
+	scaleSlider:SetValue(Arenamaster.db.profile.enemyFrameScale or 1.0)
+	scaleSlider:SetCallback("OnValueChanged", function(widget, event, value)
+		Arenamaster.db.profile.enemyFrameScale = value
 	end)
-	soundToggle:SetWidth(150)
-	mainFrame:AddChild(soundToggle)
+	scaleSlider:SetFullWidth(true)
+	mainFrame:AddChild(scaleSlider)
 
 	-- ===========================
-	-- THEME SECTION
+	-- NOTIFICATIONS
 	-- ===========================
 
-	local themeHeader = AceGUI:Create("Heading")
-	themeHeader:SetText("|cff9775fa🎨 APPEARANCE|r")
-	themeHeader:SetFullWidth(true)
-	mainFrame:AddChild(themeHeader)
+	local notifHeader = AceGUI:Create("Label")
+	notifHeader:SetText("|cff4dabf7🔔 NOTIFICATIONS|r")
+	notifHeader:SetFont(nil, 14, "outline")
+	notifHeader:SetFullWidth(true)
+	mainFrame:AddChild(notifHeader)
 
-	local themeLabel = AceGUI:Create("Label")
-	themeLabel:SetText("Color Theme:")
-	themeLabel:SetWidth(100)
-	mainFrame:AddChild(themeLabel)
-
-	local themeDropdown = AceGUI:Create("Dropdown")
-	themeDropdown:SetList({
-		Dark = "🌙 Dark",
-		Light = "☀️ Light",
-		Ocean = "🌊 Ocean",
-		Forest = "🌲 Forest",
-		Fire = "🔥 Fire"
-	})
-	themeDropdown:SetValue(Arenamaster.db.profile.uiTheme)
-	themeDropdown:SetCallback("OnValueChanged", function(widget, event, value)
-		Arenamaster.db.profile.uiTheme = value
-		print("|cff00ff00✓ Theme changed to: " .. value .. "|r")
+	-- Enable Notifications
+	local enableNotifCheckbox = AceGUI:Create("CheckBox")
+	enableNotifCheckbox:SetLabel("Enable Notifications")
+	enableNotifCheckbox:SetValue(Arenamaster.db.profile.enableNotifications or true)
+	enableNotifCheckbox:SetCallback("OnValueChanged", function(widget, event, value)
+		Arenamaster.db.profile.enableNotifications = value
 	end)
-	themeDropdown:SetWidth(150)
-	mainFrame:AddChild(themeDropdown)
+	enableNotifCheckbox:SetFullWidth(true)
+	mainFrame:AddChild(enableNotifCheckbox)
 
-	-- Font Size
-	local fontLabel = AceGUI:Create("Label")
-	fontLabel:SetText("Font Size:")
-	fontLabel:SetWidth(80)
-	mainFrame:AddChild(fontLabel)
-
-	local fontSlider = AceGUI:Create("Slider")
-	fontSlider:SetSliderValues(8, 18, 1)
-	fontSlider:SetValue(Arenamaster.db.profile.fontSize)
-	fontSlider:SetCallback("OnValueChanged", function(widget, event, value)
-		Arenamaster.db.profile.fontSize = value
+	-- Notification Volume
+	local volumeSlider = AceGUI:Create("Slider")
+	volumeSlider:SetLabel("Notification Volume")
+	volumeSlider:SetSliderValues(0.0, 1.0, 0.05)
+	volumeSlider:SetValue(Arenamaster.db.profile.notificationVolume or 0.7)
+	volumeSlider:SetCallback("OnValueChanged", function(widget, event, value)
+		Arenamaster.db.profile.notificationVolume = value
 	end)
-	fontSlider:SetWidth(150)
-	mainFrame:AddChild(fontSlider)
+	volumeSlider:SetFullWidth(true)
+	mainFrame:AddChild(volumeSlider)
 
 	-- ===========================
-	-- ADVANCED OPTIONS BUTTON
+	-- ANALYTICS
 	-- ===========================
 
-	local advancedGroup = AceGUI:Create("SimpleGroup")
-	advancedGroup:SetFullWidth(true)
-	advancedGroup:SetHeight(50)
-	advancedGroup:SetLayout("Flow")
-	mainFrame:AddChild(advancedGroup)
+	local analyticsHeader = AceGUI:Create("Label")
+	analyticsHeader:SetText("|cff4dabf7📊 ANALYTICS|r")
+	analyticsHeader:SetFont(nil, 14, "outline")
+	analyticsHeader:SetFullWidth(true)
+	mainFrame:AddChild(analyticsHeader)
 
-	local advancedBtn = AceGUI:Create("Button")
-	advancedBtn:SetText("🔧 Advanced Options")
-	advancedBtn:SetWidth(200)
-	advancedBtn:SetCallback("OnClick", function()
-		local ConfigAdvanced = Arenamaster:GetModule("ConfigAdvanced")
-		if ConfigAdvanced and ConfigAdvanced.ShowAdvancedOptions then
-			ConfigAdvanced:ShowAdvancedOptions()
-		else
-			print("|cff4dabf7Arenamaster|r - Advanced options not available")
-		end
-		if mainFrame then
-			mainFrame:Hide()
-		end
+	-- Track Statistics
+	local trackStatsCheckbox = AceGUI:Create("CheckBox")
+	trackStatsCheckbox:SetLabel("Track Match Statistics")
+	trackStatsCheckbox:SetValue(Arenamaster.db.profile.trackStats or true)
+	trackStatsCheckbox:SetCallback("OnValueChanged", function(widget, event, value)
+		Arenamaster.db.profile.trackStats = value
 	end)
-	advancedGroup:AddChild(advancedBtn)
+	trackStatsCheckbox:SetFullWidth(true)
+	mainFrame:AddChild(trackStatsCheckbox)
 
-	-- Reset button
+	-- ===========================
+	-- ACTIONS
+	-- ===========================
+
+	local spacer = AceGUI:Create("Label")
+	spacer:SetText("")
+	spacer:SetHeight(10)
+	spacer:SetFullWidth(true)
+	mainFrame:AddChild(spacer)
+
 	local resetBtn = AceGUI:Create("Button")
-	resetBtn:SetText("↺ Reset to Defaults")
-	resetBtn:SetWidth(200)
+	resetBtn:SetText("Reset All Settings to Default")
+	resetBtn:SetFullWidth(true)
+	resetBtn:SetHeight(30)
 	resetBtn:SetCallback("OnClick", function()
-		Arenamaster.db:ResetProfile()
-		print("|cff00ff00✓ Configuration reset to defaults|r")
-		mainFrame:Hide()
-		self:CreateBeautifulConfigWindow()
+		if Arenamaster.db then
+			Arenamaster.db:ResetProfile()
+			print("|cff00ff00✓ Settings reset to default!|r")
+		end
 	end)
-	advancedGroup:AddChild(resetBtn)
-
-	-- ===========================
-	-- INFO FOOTER
-	-- ===========================
-
-	local footerGroup = AceGUI:Create("SimpleGroup")
-	footerGroup:SetFullWidth(true)
-	footerGroup:SetHeight(60)
-	footerGroup:SetLayout("Flow")
-	mainFrame:AddChild(footerGroup)
-
-	local infoLabel = AceGUI:Create("Label")
-	infoLabel:SetText(
-		"|cff4dabf7Need help?|r Type |cffff00ff/am help|r for commands\n" ..
-		"|cffccccccFor detailed configuration, use |cffff00ffAdvanced Options|r"
-	)
-	infoLabel:SetFullWidth(true)
-	footerGroup:AddChild(infoLabel)
+	mainFrame:AddChild(resetBtn)
 
 	mainFrame:Show()
 end
 
 -- ===========================
--- UTILITY FUNCTIONS
+-- PUBLIC API
 -- ===========================
 
-function ConfigUI:ApplyPreset(presetName)
-	-- Presets are defined in config module
-	local ConfigModule = Arenamaster:GetModule("Config")
-	if ConfigModule then
-		ConfigModule:ApplyPreset(presetName)
-		print("|cff00ff00✓ Preset '" .. presetName .. "' applied!|r")
-	end
+function ConfigUI:OnInitialize()
+	-- UI initialized
+end
+
+function ConfigUI:OnEnable()
+	self:RegisterEvent("PLAYER_LOGIN")
 end
 
 function ConfigUI:ShowConfigWindow()
@@ -316,10 +218,6 @@ function ConfigUI:ToggleConfigWindow()
 		self:ShowConfigWindow()
 	end
 end
-
--- ===========================
--- EVENT HANDLERS
--- ===========================
 
 function ConfigUI:PLAYER_LOGIN()
 	Arenamaster:PrintDebug("Beautiful ConfigUI loaded and ready")
