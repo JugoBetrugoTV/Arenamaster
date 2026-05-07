@@ -32,9 +32,16 @@ function ThreatDetector:OnEnable()
 end
 
 function ThreatDetector:CalculateThreat(unit)
-	local health = UnitHealth(unit)
-	local maxHealth = UnitHealthMax(unit)
-	local healthPercent = (health / maxHealth) * 100
+	local healthPercent = 50
+	if C_Unit and C_Unit.GetHealthPercent then
+		healthPercent = C_Unit.GetHealthPercent(unit) or 50
+	else
+		local health = UnitHealth(unit)
+		local maxHealth = UnitHealthMax(unit)
+		if maxHealth > 0 then
+			healthPercent = (health / maxHealth) * 100
+		end
+	end
 
 	local threatScore = healthPercent * THREAT_WEIGHTS.health
 

@@ -366,9 +366,16 @@ function ArenaIntelligence:CalculateAdvancedThreat(unit)
 	local factors = {}
 
 	-- Factor 1: Health (30%)
-	local health = UnitHealth(unit)
-	local maxHealth = UnitHealthMax(unit)
-	local healthPercent = maxHealth > 0 and (health / maxHealth) * 100 or 0
+	local healthPercent = 50
+	if C_Unit and C_Unit.GetHealthPercent then
+		healthPercent = C_Unit.GetHealthPercent(unit) or 50
+	else
+		local health = UnitHealth(unit)
+		local maxHealth = UnitHealthMax(unit)
+		if maxHealth > 0 then
+			healthPercent = (health / maxHealth) * 100
+		end
+	end
 	local healthScore = healthPercent * 0.3
 	factors.health = healthScore
 
