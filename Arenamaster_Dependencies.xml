@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Arenamaster Dependencies and Load Order
+    Defines module initialization order and dependencies
+-->
+
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- Core Main File -->
+    <Script file="Arenamaster.lua"/>
+
+    <!-- Tier 0: Foundation & Core Data (No dependencies) -->
+    <Script file="modules/opponents.lua"/>
+    <Script file="modules/cooldowns.lua"/>
+    <Script file="modules/rating.lua"/>
+    <Script file="modules/config.lua"/>
+
+    <!-- Tier 1: UI & Configuration -->
+    <Script file="modules/configui.lua"/>
+    <Script file="modules/enemyframes.lua"/>
+    <Script file="modules/auratracker.lua"/>
+
+    <!-- Tier 2: Analysis & Detection (depends on Tier 0) -->
+    <Script file="modules/threat.lua"/>
+    <Script file="modules/predictor.lua"/>
+    <Script file="modules/analytics.lua"/>
+
+    <!-- Tier 3: Notifications & Display (depends on Tier 2) -->
+    <Script file="modules/notifications.lua"/>
+    <Script file="modules/callouts.lua"/>
+    <Script file="modules/map.lua"/>
+
+    <!-- Tier 4: AI & Intelligence (depends on Tier 0-2) -->
+    <Script file="modules/profiler.lua"/>
+    <Script file="modules/predictor_match.lua"/>
+    <Script file="modules/goals.lua"/>
+
+</Ui>
