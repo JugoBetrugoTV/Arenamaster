@@ -838,31 +838,94 @@ SlashCmdList["ARENAMASTER"] = function(msg)
         if Arenamaster.GoalTracker then
             Arenamaster.GoalTracker:PrintNextMilestone()
         end
+    elseif args[1] == "preset" then
+        if args[2] then
+            local presetName = args[2]:upper()
+            local success = Arenamaster.ConfigManager:ApplyPreset(presetName)
+            if not success then
+                print("|cffff0000[Arenamaster]|r Preset nicht gefunden. Nutze: /am presets")
+            end
+        else
+            Arenamaster.ConfigManager:PrintPresets()
+        end
+    elseif args[1] == "presets" then
+        Arenamaster.ConfigManager:PrintPresets()
+    elseif args[1] == "search" and args[2] then
+        local keyword = table.concat(args, " ", 2)
+        local results = Arenamaster.ConfigManager:SearchSettings(keyword)
+        if #results > 0 then
+            print("|cff00ffff=== Suchergebnisse ===|r")
+            for _, setting in ipairs(results) do
+                print(string.format("|cff00ff00%s|r (%s) - %s", setting.name, setting.category, setting.description))
+            end
+        else
+            print("|cffff0000[Arenamaster]|r Keine Einstellungen gefunden")
+        end
+    elseif args[1] == "reset" then
+        if args[2] == "category" and args[3] then
+            Arenamaster.ConfigManager:ResetCategory(args[3]:upper())
+        else
+            StaticPopup_Show("AM_RESET_STATS")
+        end
+    elseif args[1] == "export" then
+        Arenamaster.ConfigManager:ExportToChat()
+    elseif args[1] == "import" and args[2] then
+        local importStr = table.concat(args, " ", 2)
+        Arenamaster.ConfigManager:ImportConfig(importStr)
+    elseif args[1] == "profiles" then
+        if args[2] == "list" then
+            Arenamaster.ConfigManager:PrintProfiles()
+        else
+            Arenamaster.ConfigManager:PrintProfiles()
+        end
+    elseif args[1] == "config" then
+        if args[2] == "list" or args[2] == "all" then
+            Arenamaster.ConfigManager:PrintAllSettings()
+        elseif args[2] and args[3] then
+            local key = args[2]
+            local value = args[3]
+            local success = Arenamaster.ConfigManager:Set(key, value)
+            if success then
+                print("|cff00ff00[Arenamaster]|r ✓ " .. key .. " = " .. value)
+            else
+                print("|cffff0000[Arenamaster]|r ✗ Fehler: " .. tostring(success))
+            end
+        else
+            print("|cff00ffff=== Config Befehle ===|r")
+            print("  /am config list - Alle Einstellungen anzeigen")
+            print("  /am config <key> <value> - Einstellung ändern")
+            print("  /am search <keyword> - Einstellungen suchen")
+        end
     elseif args[1] == "help" or args[1] == "?" then
-        print("|cff00ffff=== Arenamaster v" .. ADDON_VERSION .. " Befehle ===|r")
-        print("|cff00ff00HAUPTBEFEHLE|r")
-        print("  /am - UI öffnen/schließen")
-        print("  /am settings - Einstellungen öffnen")
-        print("  /am stats - Statistiken anzeigen")
+        print("|cff00ffff╔════════════════════════════════════════╗|r")
+        print("|cff00ffff║  Arenamaster v" .. ADDON_VERSION .. " - Befehle       ║|r")
+        print("|cff00ffff╠════════════════════════════════════════╣|r")
+        print("|cff00ff00  HAUPT-BEFEHLE|r")
+        print("    /am - UI öffnen")
+        print("    /am settings - Einstellungen")
+        print("    /am stats - Statistiken")
         print("")
-        print("|cff00ff00COMBAT INTELLIGENCE|r")
-        print("  /am threat - Threat-Analyse")
-        print("  /am cooldowns - Cooldown-Status")
-        print("  /am match - Match-Zusammenfassung")
-        print("  /am predict - Win-Wahrscheinlichkeit")
+        print("|cff00ff00  PRESETS & KONFIGURATION|r")
+        print("    /am presets - Verfügbare Presets")
+        print("    /am preset <name> - Preset anwenden")
+        print("    /am config list - Alle Einstellungen")
+        print("    /am config <key> <value> - Einstellung ändern")
+        print("    /am search <keyword> - Einstellungen suchen")
+        print("    /am export - Config kopieren")
+        print("    /am import <string> - Config importieren")
         print("")
-        print("|cff00ff00GEGNER & ZIELE|r")
-        print("  /am profiles - Top Gegner anzeigen")
-        print("  /am profile <name> - Gegner-Profil")
-        print("  /am goals - Alle Ziele anzeigen")
-        print("  /am next - Nächster Meilenstein")
+        print("|cff00ff00  COMBAT INTELLIGENCE|r")
+        print("    /am threat - Threat-Analyse")
+        print("    /am cooldowns - Cooldown-Status")
+        print("    /am match - Match-Zusammenfassung")
+        print("    /am predict - Win-Wahrscheinlichkeit")
         print("")
-        print("|cff00ff00KONFIGURATION|r")
-        print("  /am frames toggle - Enemy Frames an/aus")
-        print("  /am reset - Statistiken zurücksetzen")
-        print("  /am config <key> <value> - Einstellung ändern")
-        print("")
-        print("|cff00ffff/am help|r - Diese Hilfe")
+        print("|cff00ff00  GEGNER & ZIELE|r")
+        print("    /am profiles - Top Gegner")
+        print("    /am profile <name> - Gegner-Profil")
+        print("    /am goals - Alle Ziele")
+        print("    /am next - Nächster Meilenstein")
+        print("|cff00ffff╚════════════════════════════════════════╝|r")
     else
         print("|cffff0000[Arenamaster]|r Unbekannter Befehl: " .. msg)
         print("Nutze |cff00ffff/am help|r für Hilfe")
