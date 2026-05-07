@@ -134,16 +134,19 @@ function ArenaIntelligence:GetDRStatus(targetUnit, chainType)
 		return {
 			applications = 0,
 			reduction = 0,
+			percent = 100,
 			percentage = "100%",
 			status = "Full",
 		}
 	end
 
 	local chain = drTracking[targetUnit][chainType]
+	local percentValue = math.floor((1 - chain.reduction) * 100)
 	return {
 		applications = chain.applications,
 		reduction = chain.reduction,
-		percentage = math.floor((1 - chain.reduction) * 100) .. "%",
+		percent = percentValue,
+		percentage = percentValue .. "%",
 		status = chain.reduction == 1 and "Immune" or "Active",
 	}
 end
@@ -251,7 +254,7 @@ function ArenaIntelligence:PredictInterruptAvailability(unit, spellName)
 
 		-- High consistency = high confidence
 		local stddev = math.sqrt(variance)
-		local consistency = 1 - math.min(1, stddev / avgInterval)
+		local consistency = avgInterval > 0 and (1 - math.min(1, stddev / avgInterval)) or 0.5
 		prediction.confidence = math.max(0.5, consistency)
 	else
 		prediction.confidence = 0.5
@@ -365,7 +368,7 @@ function ArenaIntelligence:CalculateAdvancedThreat(unit)
 	-- Factor 1: Health (30%)
 	local health = UnitHealth(unit)
 	local maxHealth = UnitHealthMax(unit)
-	local healthPercent = (health / maxHealth) * 100
+	local healthPercent = maxHealth > 0 and (health / maxHealth) * 100 or 0
 	local healthScore = healthPercent * 0.3
 	factors.health = healthScore
 
@@ -402,7 +405,7 @@ function ArenaIntelligence:CalculateAdvancedThreat(unit)
 	return {
 		score = math.floor(score),
 		maxScore = 100,
-		percentage = math.floor((score / 100) * 100),
+		percentage = math.min(math.floor(score), 100),
 		factors = factors,
 	}
 end
@@ -423,8 +426,13 @@ function ArenaIntelligence:GetClassDamageScore(unit)
 		MAGE = 15,
 		PRIEST = 10,
 		PALADIN = 15,
+		DEATHKNIGHT = 25,
+		DEMON_HUNTER = 25,
+		MONK = 20,
+		EVOKER = 20,
 	}
 
+	if not UnitExists(unit) then return 15 end
 	local _, class = UnitClass(unit)
 	return classScores[class] or 15
 end

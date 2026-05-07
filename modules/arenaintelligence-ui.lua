@@ -83,7 +83,7 @@ function ArenaIntelligenceUI:UpdateDRDisplay()
 			local rootStatus = ArenaIntelligence:GetDRStatus(unit, "root")
 
 			-- Show worst DR
-			local worstPercent = math.min(tonumber(stunStatus.percentage) or 100, tonumber(rootStatus.percentage) or 100)
+			local worstPercent = math.min(stunStatus.percent or 100, rootStatus.percent or 100)
 			local indicator = drIndicators[unit]
 
 			if indicator then
