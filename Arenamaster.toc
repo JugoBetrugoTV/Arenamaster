@@ -11,6 +11,7 @@ modules/opponents.lua
 modules/cooldowns.lua
 modules/rating.lua
 modules/config.lua
+modules/configui.lua
 modules/auratracker.lua
 modules/enemyframes.lua
 modules/threat.lua
