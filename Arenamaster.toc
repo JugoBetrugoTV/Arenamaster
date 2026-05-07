@@ -45,9 +45,11 @@ modules/map.lua
 modules/callouts.lua
 modules/arenaintelligence-ui.lua
 modules/arenaintelligence-commands.lua
+modules/arenaintelligence-dashboard.lua
 
 ## TIER 4: AI & Intelligence (Depends on Tier 0-2)
 modules/profiler.lua
 modules/predictor_match.lua
 modules/goals.lua
 modules/arenaintelligence-summary.lua
+modules/arenaintelligence-stats.lua

@@ -411,8 +411,37 @@ function ArenaIntelligence:CalculateAdvancedThreat(unit)
 end
 
 function ArenaIntelligence:HasAuraByType(unit, auraType)
-	-- Would check for specific aura types
-	return false  -- Simplified
+	-- Check for specific offensive/defensive aura types
+	if auraType == "offensive" then
+		-- Check for offensive buffs/cooldowns
+		local offensiveAuras = {
+			"Bloodlust", "Haste", "Heroism", "Time Warp",
+			"Power Infusion", "Combustion", "Avatar",
+			"Enrage", "Avenging Wrath", "Incarnation",
+			"Berserk", "Primal Wrath", "Lust"
+		}
+		for _, auraName in ipairs(offensiveAuras) do
+			if UnitAura(unit, auraName) then
+				return true
+			end
+		end
+		return false
+	elseif auraType == "defensive" then
+		-- Check for defensive buffs/cooldowns
+		local defensiveAuras = {
+			"Barrier", "Shield", "Divine Shield", "Protection",
+			"Defensive Stance", "Ironbark", "Iceblock",
+			"Darkness", "Reflection", "Guardian Spirit",
+			"Power Word: Shield", "Unbreakable", "Fortified"
+		}
+		for _, auraName in ipairs(defensiveAuras) do
+			if UnitAura(unit, auraName) then
+				return true
+			end
+		end
+		return false
+	end
+	return false
 end
 
 function ArenaIntelligence:GetClassDamageScore(unit)
@@ -438,8 +467,14 @@ function ArenaIntelligence:GetClassDamageScore(unit)
 end
 
 function ArenaIntelligence:IsTargetNearby(unit)
-	-- Check if within arena relevant distance
-	return true  -- Simplified
+	-- Check if within arena relevant distance (40 yards for melee relevance)
+	if not UnitExists(unit) then return false end
+
+	local distance = UnitDistance(unit)
+	if not distance then return false end
+
+	-- Convert yards to distance check (40 yards is typical arena engagement range)
+	return distance <= 40
 end
 
 -- ===========================
@@ -467,14 +502,105 @@ function ArenaIntelligence:UNIT_SPELLCAST_SUCCEEDED(event, unit, castGUID, spell
 end
 
 function ArenaIntelligence:UNIT_AURA(event, unit)
-	-- Track CC applications
-	if string.find(unit, "^arena%d$") then
-		-- Would parse auras and track DRs
+	-- Track CC applications in real-time
+	if not string.find(unit, "^arena%d$") then return end
+
+	-- Check all current auras on the unit
+	local index = 1
+	while true do
+		local auraName, icon, count, debuffType, duration, expirationTime, caster = UnitAura(unit, index)
+
+		if not auraName then break end
+
+		-- Check if this aura is in our DR chains
+		for chainType, chainData in pairs(DR_CHAINS) do
+			for _, effect in ipairs(chainData.effects) do
+				if string.lower(auraName):find(string.lower(effect)) or effect == string.lower(auraName) then
+					-- This is a CC effect, track it
+					local casterName = caster and UnitName(caster) or "Unknown"
+					self:ApplyCCEffect(unit, auraName, chainType)
+
+					-- Debug output if enabled
+					if Arenamaster.db.profile.debugMode then
+						Arenamaster:PrintDebug(unit .. " hit by " .. chainType .. ": " .. auraName .. " from " .. casterName)
+					end
+					break
+				end
+			end
+		end
+
+		index = index + 1
 	end
 end
 
-function ArenaIntelligence:COMBAT_LOG_EVENT_UNFILTERED()
-	-- Would parse combat log for detailed analysis
+function ArenaIntelligence:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, eventType, hideCaster, srcGUID, srcName, srcFlags, srcRaidFlags, dstGUID, dstName, dstFlags, dstRaidFlags, ...)
+	-- Parse combat log for detailed damage, healing, and CC events
+	local args = {...}
+
+	-- Track damage events
+	if eventType == "SPELL_DAMAGE" or eventType == "SWING_DAMAGE" or eventType == "RANGE_DAMAGE" then
+		local spellID, spellName, spellSchool = args[1], args[2], args[3]
+		local amount = args[4]
+
+		if string.find(srcGUID, "Player") and string.find(dstGUID, "Creature") == nil then
+			self:LogCombatEvent("damage", srcName, dstName, spellName or "Attack", amount)
+		end
+	end
+
+	-- Track healing events
+	if eventType == "SPELL_HEAL" then
+		local spellID, spellName, spellSchool = args[1], args[2], args[3]
+		local amount, overheal = args[4], args[5]
+
+		if string.find(srcGUID, "Player") then
+			self:LogCombatEvent("heal", srcName, dstName, spellName, amount)
+		end
+	end
+
+	-- Track interrupt events
+	if eventType == "SPELL_INTERRUPT" then
+		local spellID, spellName = args[1], args[2]
+		local extraSpellID, extraSpellName = args[3], args[4]
+
+		if string.find(srcGUID, "Player") then
+			self:RecordInterruptUsage(srcName, spellName)
+			self:LogCombatEvent("interrupt", srcName, dstName, spellName)
+		end
+	end
+
+	-- Track crowd control applications
+	if eventType == "SPELL_AURA_APPLIED" then
+		local spellID, spellName, spellSchool = args[1], args[2], args[3]
+		local auraType = args[4]
+
+		-- Check if this is a CC aura
+		for chainType, chainData in pairs(DR_CHAINS) do
+			for _, effect in ipairs(chainData.effects) do
+				if effect == string.lower(spellName or "") then
+					if string.find(srcGUID, "Player") then
+						self:ApplyCCEffect(dstName, spellName, chainType)
+						self:LogCombatEvent("cc", srcName, dstName, spellName)
+					end
+				end
+			end
+		end
+	end
+
+	-- Track dispels
+	if eventType == "SPELL_DISPEL" or eventType == "SPELL_STOLEN" then
+		local spellID, spellName = args[1], args[2]
+
+		if string.find(srcGUID, "Player") then
+			self:LogCombatEvent("dispel", srcName, dstName, spellName)
+		end
+	end
+
+	-- Track deaths
+	if eventType == "UNIT_DIED" then
+		if string.find(srcGUID, "Player") then
+			self:LogCombatEvent("death", srcName, "", "Death")
+		end
+	end
 end
 
 -- ===========================
