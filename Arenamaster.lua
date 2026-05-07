@@ -65,8 +65,13 @@ function AM:Initialize()
     end)
 
     isInitialized = true
-    print("|cff00ff00[Arenamaster]|r v" .. ADDON_VERSION .. " Arena-Tracking aktiviert.")
-    print("|cff00ffff/am|r - UI | |cff00ffff/am settings|r - Config | |cff00ffff/am help|r - Commands")
+    print("|cff00ff00[Arenamaster]|r v" .. ADDON_VERSION .. " erfolgreich geladen!")
+    print("")
+    print("|cff00ffff━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━|r")
+    print("|cff4dabf7⚙️  KONFIGURATION:|r  |cff00ffff/am config|r")
+    print("|cff4dabf7📊 STATISTIKEN:|r     |cff00ffff/am stats|r")
+    print("|cff4dabf7❓ HILFE:|r           |cff00ffff/am help|r")
+    print("|cff00ffff━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━|r")
 end
 
 -- ===========================
