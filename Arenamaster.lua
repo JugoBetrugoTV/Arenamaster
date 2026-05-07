@@ -42,6 +42,10 @@ function AM:Initialize()
     self.CombatAnalytics:Initialize()
     self.SmartNotifications:Initialize()
     self.ArenaMap:Initialize()
+    self.OpponentProfiler:Initialize()
+    self.MatchPredictor:Initialize()
+    self.SmartCallouts:Initialize()
+    self.GoalTracker:Initialize()
 
     -- UI erstellen
     self:CreateUI()
@@ -814,6 +818,26 @@ SlashCmdList["ARENAMASTER"] = function(msg)
         if Arenamaster.CombatAnalytics then
             Arenamaster.CombatAnalytics:PrintMatchSummary()
         end
+    elseif args[1] == "predict" then
+        if Arenamaster.MatchPredictor then
+            Arenamaster.MatchPredictor:PrintMatchAnalysis()
+        end
+    elseif args[1] == "profiles" then
+        if Arenamaster.OpponentProfiler then
+            Arenamaster.OpponentProfiler:PrintAllProfiles()
+        end
+    elseif args[1] == "profile" and args[2] then
+        if Arenamaster.OpponentProfiler then
+            Arenamaster.OpponentProfiler:PrintProfile(args[2])
+        end
+    elseif args[1] == "goals" then
+        if Arenamaster.GoalTracker then
+            Arenamaster.GoalTracker:PrintGoals()
+        end
+    elseif args[1] == "next" then
+        if Arenamaster.GoalTracker then
+            Arenamaster.GoalTracker:PrintNextMilestone()
+        end
     elseif args[1] == "help" or args[1] == "?" then
         print("|cff00ffff=== Arenamaster v" .. ADDON_VERSION .. " Befehle ===|r")
         print("|cff00ff00HAUPTBEFEHLE|r")
@@ -821,10 +845,17 @@ SlashCmdList["ARENAMASTER"] = function(msg)
         print("  /am settings - Einstellungen öffnen")
         print("  /am stats - Statistiken anzeigen")
         print("")
-        print("|cff00ff00COMBAT FEATURES|r")
-        print("  /am threat - Threat-Analyse anzeigen")
-        print("  /am cooldowns - Cooldown-Überblick")
+        print("|cff00ff00COMBAT INTELLIGENCE|r")
+        print("  /am threat - Threat-Analyse")
+        print("  /am cooldowns - Cooldown-Status")
         print("  /am match - Match-Zusammenfassung")
+        print("  /am predict - Win-Wahrscheinlichkeit")
+        print("")
+        print("|cff00ff00GEGNER & ZIELE|r")
+        print("  /am profiles - Top Gegner anzeigen")
+        print("  /am profile <name> - Gegner-Profil")
+        print("  /am goals - Alle Ziele anzeigen")
+        print("  /am next - Nächster Meilenstein")
         print("")
         print("|cff00ff00KONFIGURATION|r")
         print("  /am frames toggle - Enemy Frames an/aus")
