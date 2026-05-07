@@ -23,37 +23,37 @@ modules/features.lua
 modules/featureconfig.lua
 
 ## TIER 1: UI & Configuration (Depends on Tier 0)
-modules/ace3config.lua
+# DISABLED: ace3config.lua (library loading issue)
 modules/configui.lua
 modules/configadvanced.lua
 modules/dashboard.lua
 modules/auratracker.lua
 modules/enemyframes.lua
 modules/minimap.lua
-modules/arenaintelligence-config.lua
+# DISABLED: arenaintelligence-config.lua (library loading issue)
 
 ## TIER 2: Analysis & Detection (Depends on Tier 0-1)
-modules/threat.lua
+# DISABLED: threat.lua (WoW taint system incompatibility - 2018+ errors)
 modules/predictor.lua
 modules/analytics.lua
-modules/arenaintelligence.lua
+# DISABLED: arenaintelligence.lua (WoW taint system incompatibility - 101+ errors)
 modules/opponent-spec-detection.lua
-modules/arenaintelligence-performance.lua
+# DISABLED: arenaintelligence-performance.lua (depends on arenaintelligence.lua)
 
 ## TIER 3: Notifications & Display (Depends on Tier 0-2)
 modules/notifications.lua
 modules/map.lua
 modules/callouts.lua
-modules/arenaintelligence-ui.lua
-modules/arenaintelligence-commands.lua
-modules/arenaintelligence-dashboard.lua
+# DISABLED: arenaintelligence-ui.lua (depends on arenaintelligence.lua)
+# DISABLED: arenaintelligence-commands.lua (module loading errors)
+# DISABLED: arenaintelligence-dashboard.lua (module loading errors)
 
 ## TIER 4: AI & Intelligence (Depends on Tier 0-2)
-modules/profiler.lua
+# DISABLED: profiler.lua (depends on arenaintelligence.lua)
 modules/predictor_match.lua
 modules/goals.lua
-modules/arenaintelligence-summary.lua
-modules/arenaintelligence-stats.lua
-modules/arenaintelligence-profiling.lua
-modules/arenaintelligence-predictions.lua
-modules/arenaintelligence-coaching.lua
+# DISABLED: arenaintelligence-summary.lua (module not loading)
+# DISABLED: arenaintelligence-stats.lua (typo in module name)
+# DISABLED: arenaintelligence-profiling.lua (depends on arenaintelligence.lua)
+# DISABLED: arenaintelligence-predictions.lua (depends on arenaintelligence.lua)
+# DISABLED: arenaintelligence-coaching.lua (depends on arenaintelligence.lua)
