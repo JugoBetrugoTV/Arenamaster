@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<!-- LibStub - Library management system -->
+	<Script file="LibStub/LibStub.lua"/>
+
+	<!-- CallbackHandler - Event system foundation -->
+	<Script file="CallbackHandler-1.0/CallbackHandler-1.0.lua"/>
+
+	<!-- AceAddon - Addon framework -->
+	<Script file="AceAddon-3.0/AceAddon-3.0.lua"/>
+
+	<!-- AceEvent - Event handling library -->
+	<Script file="AceEvent-3.0/AceEvent-3.0.lua"/>
+
+	<!-- AceTimer - Timer management library -->
+	<Script file="AceTimer-3.0/AceTimer-3.0.lua"/>
+
+	<!-- AceDB - Database library with SavedVariables support -->
+	<Script file="AceDB-3.0/AceDB-3.0.lua"/>
+
+	<!-- AceConfig - Configuration registry library -->
+	<Script file="AceConfig-3.0/AceConfig-3.0.lua"/>
+
+	<!-- AceGUI - GUI widget library -->
+	<Script file="AceGUI-3.0/AceGUI-3.0.lua"/>
+
+	<!-- AceConfigDialog - Configuration GUI builder -->
+	<Script file="AceConfigDialog-3.0/AceConfigDialog-3.0.lua"/>
+
+</Ui>

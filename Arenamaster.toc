@@ -4,7 +4,12 @@
 ## Author: JugoBetrugoTV
 ## Version: 4.0.0
 ## SavedVariables: ArenamasterDB
+## OptionalDeps: Ace3
 
+# Libraries (Ace3 Framework)
+libs/libs.xml
+
+# Core
 Arenamaster.lua
 
 ## TIER 0: Foundation (No Dependencies)
@@ -14,6 +19,7 @@ modules/rating.lua
 modules/config.lua
 
 ## TIER 1: UI & Configuration (Depends on Tier 0)
+modules/ace3config.lua
 modules/configui.lua
 modules/auratracker.lua
 modules/enemyframes.lua
