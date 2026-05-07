@@ -1,108 +1,104 @@
-# Arenamaster - PvP Arena Assistant
+# 🎯 Arenamaster - PvP Arena Assistant
 
-Eine umfassende PvP-Erweiterung für World of Warcraft Patch 12.0.5 Retail
+**Professional-grade PvP addon for World of Warcraft 12.0.5 Retail**
 
-## Übersicht
-Arenamaster ist ein leistungsstarkes Addon für Arena-PvP in World of Warcraft. Es bietet Echtzeit-Tracking, Statistiken und Gegner-Management.
-
-## 🎯 Hauptfeatures
-
-### Arena-Statistiken
-- **Match-Tracking**: Automatische Aufzeichnung aller Arena-Kämpfe
-- **Winrate-Berechnung**: Live-Winrate-Statistiken
-- **Streak-Tracking**: Aktueller und bester Gewinn-Streak
-- **Gegner-Historie**: Detaillierte Aufzeichnung aller Gegner
-
-### Gegner-Management
-- **Gegner-Datenbank**: Speichert Information über alle bisherigen Gegner
-- **Klasse & Spezialisierung**: Automatisches Tracking der Gegner-Klassen
-- **Win/Loss-Record**: Persönliche Statistiken gegen jeden Gegner
-- **Häufigste Gegner**: Top-5 Liste der am häufigsten getroffenen Gegner
-
-### Rating-System
-- **Live Rating Tracking**: Zeige dein aktuelles PvP-Rating
-- **Tier-Anzeige**: Anzeige des aktuellen Tiers (Unranked, Challenger, Rival, Duelist, Gladiator)
-- **Rating-Geschichte**: Verfolge deine Rating-Entwicklung
-- **Tier-Fortschritt**: Sehe deinen Fortschritt im aktuellen Tier
-
-### Cooldown-Tracking
-- **Gegner-Cooldowns**: Verfolge Cooldowns gegnerischer Fähigkeiten
-- **Automatische Updates**: Echtzeit-Updates während des Matches
-- **Cooldown-Listen**: Übersichtliche Liste aktiver Cooldowns
-
-## 📊 Tabs im Interface
-
-### 1. Dashboard
-- Aktueller Arena-Status
-- Rating und Tier-Information
-- Aktueller Gewinn-Streak
-- Winrate-Progress-Bar
-- Live-Match-Informationen
-
-### 2. Statistiken
-- Gesamt Anzahl Matches
-- Siege und Niederlagen
-- Berechnet Winrate
-- Best Streak
-- Top 5 Gegner nach Encounters
-
-### 3. Einstellungen
-- Gegner-Tracking aktivieren/deaktivieren
-- Cooldown-Tracking aktivieren/deaktivieren
-- Match-Benachrichtigungen
-- Statistiken zurücksetzen
-
-## 🎮 Slash-Befehle
-
-```
-/am              - UI öffnen/schließen
-/am stats        - Statistiken im Chat anzeigen
-/am reset        - Statistiken zurücksetzen (mit Bestätigung)
-/am help         - Hilfe anzeigen
-```
-
-## 📋 Installation
-
-1. **Download**: Lade das Addon herunter
-2. **Platzierung**: Entpacke es in deinen WoW `Interface/AddOns` Ordner
-   ```
-   World of Warcraft/_retail_/Interface/AddOns/Arenamaster/
-   ```
-3. **Aktivierung**: Aktiviere das Addon im Spiel
-   - Hauptmenü → Einstellungen → AddOns
-   - Suche nach "Arenamaster" und aktiviere es
-4. **Neustart**: Starte World of Warcraft neu
-
-## ⚙️ Anforderungen
-- World of Warcraft Patch 12.0.5 oder neuer (Retail)
-- Lua 5.1 (WoW Standard)
-
-## 🔧 Module
-
-Das Addon besteht aus mehreren spezialisierten Modulen:
-
-- **Arenamaster.lua**: Haupt-Interface und Event-Handling
-- **modules/opponents.lua**: Gegner-Tracking und -Verwaltung
-- **modules/cooldowns.lua**: Cooldown-Überwachung
-- **modules/rating.lua**: Rating- und Tier-System
-
-## 📝 Lizenz
-MIT License - Siehe LICENSE Datei für Details
-
-## 🤝 Support & Feedback
-- Fehler melden und Vorschläge einreichen auf GitHub
-- Discord: [Link folgt]
-- Twitch: JugoBetrugoTV
-
-## 🚀 Geplante Features
-- Automatische Gegner-Name-Ausprache
-- Integration von Armory-Daten
-- Arena-Map-Overlays
-- Automatische Macro-Generierung
-- TeamSpeak/Discord Integration
-- Replays und Highlight-Aufnahme
+A comprehensive arena combat assistant with AI-powered threat detection, intelligent cooldown prediction, real-time combat analytics, and beautiful configuration UI.
 
 ---
-**Version**: 1.0.0  
-**Autor**: JugoBetrugoTV  
-**Patch**: 12.0.5 Retail
+
+## ✨ Features
+
+### 🎯 **Combat Intelligence**
+- **Threat Detection** - 8-factor intelligent threat scoring
+- **Cooldown Prediction** - Predict when dangerous abilities are ready
+- **Win Probability** - Real-time match analysis with win% prediction
+- **Opponent Profiling** - Machine learning playstyle detection
+
+### 📊 **Real-Time Analytics**
+- **Enemy Frames** - Live health/mana/cast bars with cooldown tracking
+- **Match Statistics** - DPS, damage taken, CC usage tracking
+- **Opponent History** - Complete encounter records
+- **Rating Progression** - Track tier advancement
+
+### 🎨 **Beautiful UI**
+- **Modern Config Window** - Gorgeous graphical settings with presets
+- **Visual Callouts** - On-screen priority alerts
+- **Arena Minimap** - Tactical positioning display
+- **Smart Notifications** - Multi-channel alert system
+
+### ⚡ **Optimization**
+- **Modular Architecture** - 16 independent modules
+- **Event-Driven Design** - Minimal performance impact
+- **Smart Throttling** - Prevents notification spam
+- **Memory Efficient** - Optimized data structures
+
+---
+
+## 🚀 Quick Start
+
+### Installation
+1. Download to: `World of Warcraft\_retail_\Interface\AddOns\Arenamaster\`
+2. Restart World of Warcraft
+3. Enable addon in addon selection
+4. Type `/am config` to configure
+
+### First Steps
+1. Choose a preset (Aggressive, Competitive, Streamer, Minimal, Casual)
+2. Fine-tune settings in config UI
+3. Save your profile
+4. Play arena - features activate automatically!
+
+---
+
+## 📖 Commands
+
+| Command | Function |
+|---------|----------|
+| `/am config` | Open configuration window |
+| `/am stats` | Show match statistics |
+| `/am threat` | Show threat analysis |
+| `/am cooldowns` | Show cooldown status |
+| `/am predict` | Show win probability |
+| `/am goals` | Show progression goals |
+| `/am help` | Show all commands |
+
+---
+
+## 📚 Documentation
+
+- [CONFIG_UI_GUIDE.md](docs/CONFIG_UI_GUIDE.md) - Configuration guide
+- [MODULE_STRUCTURE.md](docs/MODULE_STRUCTURE.md) - Architecture and modules
+- [INSTALLATION.md](INSTALLATION.md) - Installation guide
+- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Common issues
+
+---
+
+## 🏗️ Architecture
+
+**4-Tier Module System** with explicit dependencies:
+- **Tier 0:** Foundation (Opponent, Cooldown, Rating, Config)
+- **Tier 1:** UI (ConfigUI, EnemyFrames, AuraTracker)
+- **Tier 2:** Analysis (Threat, Predictor, Analytics)
+- **Tier 3:** Notifications (Notifications, Callouts, Map)
+- **Tier 4:** AI (Profiler, MatchPredictor, Goals)
+
+---
+
+## ⚙️ System Requirements
+
+- WoW Version: 12.0.5 Retail
+- Interface: 120005+
+- Memory: 2-5 MB typical
+- CPU: Minimal impact
+
+---
+
+## 📜 License
+
+Provided as-is for personal use. See LICENSE for details.
+
+---
+
+**Enjoy dominating the arena! ⚔️🏆**
+
+Version: 4.0.0 | Last Updated: 2026-05-07

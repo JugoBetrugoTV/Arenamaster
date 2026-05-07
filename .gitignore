@@ -1,18 +1,76 @@
-# WoW Addon specific
+# WoW Addon Development
+*.sublime-project
+*.sublime-workspace
+.vscode/
+.idea/
+
+# OS Files
+.DS_Store
+Thumbs.db
 *.swp
 *.swo
 *~
-.DS_Store
+
+# Lua LSP / Development
+.luacheckrc
+.lua-format.yaml
+debug.log
+
+# Temporary Files
+*.tmp
+*.bak
+*.temp
+.test/
 
 # IDE
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
+*.iml
+.gradle
+.classpath
+.project
+.settings/
 
-# Build
-build/
+# Node/NPM (if using any build tools)
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Build Artifacts
 dist/
+build/
+*.zip
+*.rar
+
+# Environment
+.env
+.env.local
+credentials.json
+secrets.json
+
+# Testing
+test-results.xml
+coverage/
+.coverage
+
+# WoW Specific
+SavedVariables/
+*.xdb
+*.sqlite
 
 # Logs
 *.log
+Logs/
+
+# Exclude large media files
+*.mp4
+*.avi
+*.mov
+*.wav
+*.mp3
+
+# Only track source code and docs
+!.gitkeep
+!*.md
+!*.lua
+!*.toc
+!*.xml
+!LICENSE
