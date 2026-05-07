@@ -47,15 +47,32 @@ end
 function ArenaIntelligenceSummary:GetOpponentIntelligence(unit)
 	if not ArenaIntelligence then return nil end
 
+	local health = UnitHealth(unit)
+	local maxHealth = UnitHealthMax(unit)
+	local mana = UnitMana(unit)
+	local maxMana = UnitManaMax(unit)
+
+	local healthPercent = 50
+	if C_Unit and C_Unit.GetHealthPercent then
+		healthPercent = C_Unit.GetHealthPercent(unit) or 50
+	elseif maxHealth > 0 then
+		healthPercent = (health / maxHealth) * 100
+	end
+
+	local manaPercent = 0
+	if maxMana > 0 then
+		manaPercent = (mana / maxMana) * 100
+	end
+
 	local summary = {
 		unit = unit,
 		name = UnitName(unit),
-		health = UnitHealth(unit),
-		maxHealth = UnitHealthMax(unit),
-		healthPercent = (UnitHealth(unit) / UnitHealthMax(unit)) * 100,
-		mana = UnitMana(unit),
-		maxMana = UnitManaMax(unit),
-		manaPercent = (UnitMana(unit) / UnitManaMax(unit)) * 100,
+		health = health,
+		maxHealth = maxHealth,
+		healthPercent = healthPercent,
+		mana = mana,
+		maxMana = maxMana,
+		manaPercent = manaPercent,
 		drStatus = {},
 		threatScore = nil,
 		interruptStatus = {},
