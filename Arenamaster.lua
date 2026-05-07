@@ -217,7 +217,8 @@ function Arenamaster:HandleChatCommand(input)
 		print("  |cffff00ff/am stats|r - Show statistics")
 		print("  |cffff00ff/am help|r - Show this help")
 	else
-		AceConsole:ProcessLine(input)
+		print("|cffff0000Unknown command:|r " .. input)
+		print("|cff00aiff/am help|r for available commands")
 	end
 end
 

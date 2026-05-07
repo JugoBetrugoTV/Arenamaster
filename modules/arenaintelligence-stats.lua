@@ -247,7 +247,7 @@ function ArenaIntelligenceStats:PrintDetailedReport()
 	print("  Total Healing: " .. self:FormatNumber(avgStats.totalHealing))
 end
 
-function AremaIntelligenceStats:PrintLast10Matches()
+function ArenaIntelligenceStats:PrintLast10Matches()
 	local history = Arenamaster.db.profile.matchHistory or {}
 	if #history == 0 then
 		print("No match history available")
