@@ -105,45 +105,228 @@ function Arenamaster:SetupOptions()
 		handler = Arenamaster,
 		type = 'group',
 		args = {
-			config = {
-				name = "Config",
-				desc = "Open configuration",
-				type = 'execute',
-				func = function()
-					local dialog = Arenamaster:GetAceConfigDialog()
-					if dialog then
-						dialog:Open(ADDON_NAME)
-					end
-				end
+			general = {
+				name = "🎮 General",
+				type = 'group',
+				order = 1,
+				args = {
+					enabled = {
+						name = "Enable Addon",
+						desc = "Enable/disable the entire addon",
+						type = 'toggle',
+						get = function()
+							return Arenamaster.db.profile.enabled ~= false
+						end,
+						set = function(info, value)
+							Arenamaster.db.profile.enabled = value
+							print("Arenamaster " .. (value and "|cff00ff00enabled|r" or "|cffff0000disabled|r"))
+						end,
+						order = 1,
+					},
+					debugMode = {
+						name = "Debug Mode",
+						desc = "Show debug information in chat",
+						type = 'toggle',
+						get = function()
+							return Arenamaster.db.profile.debugMode
+						end,
+						set = function(info, value)
+							Arenamaster.db.profile.debugMode = value
+							print("Debug mode: " .. (value and "|cff00ff00ON|r" or "|cffff7700OFF|r"))
+						end,
+						order = 2,
+					},
+					windowScale = {
+						name = "Window Scale",
+						desc = "Scale of the main window",
+						type = 'range',
+						min = 0.5,
+						max = 2.0,
+						step = 0.1,
+						get = function()
+							return Arenamaster.db.profile.windowScale or 1.0
+						end,
+						set = function(info, value)
+							Arenamaster.db.profile.windowScale = value
+						end,
+						order = 3,
+					},
+				}
 			},
-			stats = {
-				name = "Stats",
-				desc = "Show statistics",
-				type = 'execute',
-				func = function()
-					Arenamaster:ShowStats()
-				end
+			frames = {
+				name = "🖼️ Frames",
+				type = 'group',
+				order = 2,
+				args = {
+					showEnemyFrames = {
+						name = "Show Enemy Frames",
+						desc = "Display enemy health/mana frames",
+						type = 'toggle',
+						get = function()
+							return Arenamaster.db.profile.showEnemyFrames
+						end,
+						set = function(info, value)
+							Arenamaster.db.profile.showEnemyFrames = value
+						end,
+						order = 1,
+					},
+					enemyFrameOpacity = {
+						name = "Enemy Frame Opacity",
+						desc = "Transparency of enemy frames",
+						type = 'range',
+						min = 0.1,
+						max = 1.0,
+						step = 0.05,
+						get = function()
+							return Arenamaster.db.profile.enemyFrameOpacity
+						end,
+						set = function(info, value)
+							Arenamaster.db.profile.enemyFrameOpacity = value
+						end,
+						order = 2,
+					},
+					enemyFrameScale = {
+						name = "Enemy Frame Scale",
+						desc = "Size of enemy frames",
+						type = 'range',
+						min = 0.5,
+						max = 2.0,
+						step = 0.1,
+						get = function()
+							return Arenamaster.db.profile.enemyFrameScale
+						end,
+						set = function(info, value)
+							Arenamaster.db.profile.enemyFrameScale = value
+						end,
+						order = 3,
+					},
+				}
 			},
-			reset = {
-				name = "Reset",
-				desc = "Reset all settings",
-				type = 'execute',
-				func = function()
-					Arenamaster.db:ResetProfile()
-				end
+			auras = {
+				name = "✨ Auras & Cooldowns",
+				type = 'group',
+				order = 3,
+				args = {
+					showAuraTracker = {
+						name = "Show Aura Tracker",
+						desc = "Track buffs and debuffs",
+						type = 'toggle',
+						get = function()
+							return Arenamaster.db.profile.showAuraTracker
+						end,
+						set = function(info, value)
+							Arenamaster.db.profile.showAuraTracker = value
+						end,
+						order = 1,
+					},
+					showCooldownPrediction = {
+						name = "Show Cooldown Prediction",
+						desc = "Predict cooldown availability",
+						type = 'toggle',
+						get = function()
+							return Arenamaster.db.profile.showCooldownPrediction
+						end,
+						set = function(info, value)
+							Arenamaster.db.profile.showCooldownPrediction = value
+						end,
+						order = 2,
+					},
+				}
 			},
-			debug = {
-				name = "Debug",
-				desc = "Toggle debug mode",
-				type = 'toggle',
-				get = function()
-					return Arenamaster.db.profile.debugMode
-				end,
-				set = function(info, value)
-					Arenamaster.db.profile.debugMode = value
-					print("Debug mode: " .. (value and "|cff00ff00ON|r" or "|cffff7700OFF|r"))
-				end
-			}
+			notifications = {
+				name = "🔔 Notifications",
+				type = 'group',
+				order = 4,
+				args = {
+					enableNotifications = {
+						name = "Enable Notifications",
+						desc = "Show alerts and notifications",
+						type = 'toggle',
+						get = function()
+							return Arenamaster.db.profile.enableNotifications
+						end,
+						set = function(info, value)
+							Arenamaster.db.profile.enableNotifications = value
+						end,
+						order = 1,
+					},
+					notificationVolume = {
+						name = "Notification Volume",
+						desc = "Volume of alert sounds",
+						type = 'range',
+						min = 0.0,
+						max = 1.0,
+						step = 0.05,
+						get = function()
+							return Arenamaster.db.profile.notificationVolume
+						end,
+						set = function(info, value)
+							Arenamaster.db.profile.notificationVolume = value
+						end,
+						order = 2,
+					},
+					showVisualAlerts = {
+						name = "Show Visual Alerts",
+						desc = "Display visual notifications",
+						type = 'toggle',
+						get = function()
+							return Arenamaster.db.profile.showVisualAlerts
+						end,
+						set = function(info, value)
+							Arenamaster.db.profile.showVisualAlerts = value
+						end,
+						order = 3,
+					},
+				}
+			},
+			analytics = {
+				name = "📊 Analytics",
+				type = 'group',
+				order = 5,
+				args = {
+					trackStats = {
+						name = "Track Match Statistics",
+						desc = "Collect match data for analysis",
+						type = 'toggle',
+						get = function()
+							return Arenamaster.db.profile.trackStats
+						end,
+						set = function(info, value)
+							Arenamaster.db.profile.trackStats = value
+						end,
+						order = 1,
+					},
+					trackMatches = {
+						name = "Track Match History",
+						desc = "Keep history of your matches",
+						type = 'toggle',
+						get = function()
+							return Arenamaster.db.profile.trackMatches
+						end,
+						set = function(info, value)
+							Arenamaster.db.profile.trackMatches = value
+						end,
+						order = 2,
+					},
+				}
+			},
+			actions = {
+				name = "⚙️ Actions",
+				type = 'group',
+				order = 6,
+				args = {
+					reset = {
+						name = "Reset All Settings",
+						desc = "Reset all settings to default",
+						type = 'execute',
+						func = function()
+							Arenamaster.db:ResetProfile()
+							print("|cff4dabf7Arenamaster|r settings reset to default!")
+						end,
+						order = 1,
+					},
+				}
+			},
 		}
 	}
 
