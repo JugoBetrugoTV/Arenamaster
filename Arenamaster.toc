@@ -7,19 +7,28 @@
 
 Arenamaster.lua
 
+## TIER 0: Foundation (No Dependencies)
 modules/opponents.lua
 modules/cooldowns.lua
 modules/rating.lua
 modules/config.lua
+
+## TIER 1: UI & Configuration (Depends on Tier 0)
 modules/configui.lua
 modules/auratracker.lua
 modules/enemyframes.lua
+
+## TIER 2: Analysis & Detection (Depends on Tier 0-1)
 modules/threat.lua
 modules/predictor.lua
 modules/analytics.lua
+
+## TIER 3: Notifications & Display (Depends on Tier 0-2)
 modules/notifications.lua
 modules/map.lua
+modules/callouts.lua
+
+## TIER 4: AI & Intelligence (Depends on Tier 0-2)
 modules/profiler.lua
 modules/predictor_match.lua
-modules/callouts.lua
 modules/goals.lua
