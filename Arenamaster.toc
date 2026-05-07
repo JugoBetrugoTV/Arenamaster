@@ -9,8 +9,10 @@
 # Libraries (Ace3 Framework)
 libs/libs.xml
 
-# Core
+# Core & Design System
 Arenamaster.lua
+modules/design.lua
+modules/framedesign.lua
 
 ## TIER 0: Foundation (No Dependencies)
 modules/opponents.lua
@@ -22,6 +24,7 @@ modules/config.lua
 modules/ace3config.lua
 modules/configui.lua
 modules/configadvanced.lua
+modules/dashboard.lua
 modules/auratracker.lua
 modules/enemyframes.lua
 
