@@ -20,6 +20,7 @@ local COLORS = {
 local configFrame = nil
 local currentCategory = "FRAMES"
 local currentPreset = nil
+local searchQuery = ""
 
 -- ===========================
 -- INITIALIZATION
@@ -204,11 +205,56 @@ end
 -- ===========================
 
 function ConfigUI:CreateCategoriesSection(parent)
+    -- Search Box
+    local searchBg = CreateFrame("Frame", nil, parent)
+    searchBg:SetSize(160, 25)
+    searchBg:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, -265)
+    searchBg:SetBackdrop({
+        bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+        tile = true,
+        tileSize = 16,
+        edgeSize = 1,
+        insets = {left = 1, right = 1, top = 1, bottom = 1}
+    })
+    searchBg:SetBackdropColor(0.1, 0.1, 0.12, 0.6)
+    searchBg:SetBackdropBorderColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b, 0.4)
+
+    local searchBox = CreateFrame("EditBox", nil, searchBg)
+    searchBox:SetSize(150, 20)
+    searchBox:SetPoint("CENTER", searchBg, "CENTER")
+    searchBox:SetFontObject("GameFontSmall")
+    searchBox:SetTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b)
+    searchBox:SetScript("OnTextChanged", function(self)
+        searchQuery = self:GetText():lower()
+        if configFrame and configFrame.contentFrame then
+            AM.ConfigUI:RefreshContent(configFrame.contentFrame)
+        end
+    end)
+
+    local placeholder = searchBg:CreateFontString(nil, "BACKGROUND", "GameFontSmall")
+    placeholder:SetPoint("CENTER", searchBg, "CENTER")
+    placeholder:SetText("🔍 Suchen...")
+    placeholder:SetTextColor(COLORS.textMuted.r, COLORS.textMuted.g, COLORS.textMuted.b)
+
+    searchBox:SetScript("OnFocusGained", function(self)
+        if self:GetText() == "" then
+            placeholder:Hide()
+        end
+    end)
+
+    searchBox:SetScript("OnFocusLost", function(self)
+        if self:GetText() == "" then
+            placeholder:Show()
+        end
+    end)
+
+    -- Category Title
     local catTitle = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    catTitle:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, -265)
+    catTitle:SetPoint("TOPLEFT", parent, "TOPLEFT", 10, -300)
     catTitle:SetText("|cff4dabf7KATEGORIEN|r")
 
-    local yOffset = -285
+    local yOffset = -320
 
     local categories = AM.ConfigManager:GetCategories()
     for _, category in ipairs(categories) do
@@ -299,7 +345,30 @@ function ConfigUI:RefreshContent(contentFrame)
     title:SetTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b)
 
     -- Settings
-    local settings = AM.ConfigManager:GetSettings(currentCategory)
+    local allSettings = AM.ConfigManager:GetSettings(currentCategory)
+
+    -- Filter by search query
+    local settings = {}
+    if searchQuery ~= "" then
+        for _, setting in ipairs(allSettings) do
+            if setting.name:lower():find(searchQuery, 1, true) or
+               setting.description:lower():find(searchQuery, 1, true) or
+               setting.key:lower():find(searchQuery, 1, true) then
+                table.insert(settings, setting)
+            end
+        end
+    else
+        settings = allSettings
+    end
+
+    -- Show message if no results
+    if #settings == 0 then
+        local noResults = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        noResults:SetPoint("TOPLEFT", contentFrame, "TOPLEFT", 15, -45)
+        noResults:SetText("|cffff8800Keine Einstellungen gefunden|r")
+        return
+    end
+
     local yOffset = -45
 
     local lastGroup = nil
