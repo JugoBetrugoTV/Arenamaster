@@ -18,32 +18,14 @@
 	<!-- AceDB - Database library with SavedVariables support -->
 	<Script file="AceDB-3.0/AceDB-3.0.lua"/>
 
-	<!-- AceConfig - Configuration registry library -->
-	<Script file="AceConfig-3.0/AceConfig-3.0.lua"/>
-
 	<!-- AceGUI - GUI widget library -->
 	<Script file="AceGUI-3.0/AceGUI-3.0.lua"/>
-
-	<!-- AceConfigDialog - Configuration GUI builder -->
-	<Script file="AceConfigDialog-3.0/AceConfigDialog-3.0.lua"/>
-
-	<!-- AceSerializer - Serialize/deserialize data -->
-	<Script file="AceSerializer-3.0/AceSerializer-3.0.lua"/>
-
-	<!-- AceComm - Inter-addon communication -->
-	<Script file="AceComm-3.0/AceComm-3.0.lua"/>
 
 	<!-- AceConsole - Slash commands and console output -->
 	<Script file="AceConsole-3.0/AceConsole-3.0.lua"/>
 
-	<!-- AceConfigCmd - Command-line config handling -->
-	<Script file="AceConfigCmd-3.0/AceConfigCmd-3.0.lua"/>
-
-	<!-- AceConfigRegistry - Options registry -->
-	<Script file="AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua"/>
-
-	<!-- AceDBOptions - Profile management options -->
-	<Script file="AceDBOptions-3.0/AceDBOptions-3.0.lua"/>
+	<!-- AceSerializer - Serialize/deserialize data -->
+	<Script file="AceSerializer-3.0/AceSerializer-3.0.lua"/>
 
 	<!-- AceHook - Function and script hooking -->
 	<Script file="AceHook-3.0/AceHook-3.0.lua"/>
@@ -56,5 +38,26 @@
 
 	<!-- AceBucket - Event bucketing/grouping -->
 	<Script file="AceBucket-3.0/AceBucket-3.0.lua"/>
+
+	<!-- AceConfigRegistry - Options registry (MUST load before other Config libs) -->
+	<Script file="AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua"/>
+
+	<!-- AceConfig - Configuration registry library -->
+	<Script file="AceConfig-3.0/AceConfig-3.0.lua"/>
+
+	<!-- AceConfigDialog - Configuration GUI builder -->
+	<Script file="AceConfigDialog-3.0/AceConfigDialog-3.0.lua"/>
+
+	<!-- AceConfigCmd - Command-line config handling -->
+	<Script file="AceConfigCmd-3.0/AceConfigCmd-3.0.lua"/>
+
+	<!-- AceDBOptions - Profile management options -->
+	<Script file="AceDBOptions-3.0/AceDBOptions-3.0.lua"/>
+
+	<!-- ChatThrottleLib - Rate limiting for chat messages -->
+	<Script file="ChatThrottleLib/ChatThrottleLib.lua"/>
+
+	<!-- AceComm - Inter-addon communication -->
+	<Script file="AceComm-3.0/AceComm-3.0.lua"/>
 
 </Ui>

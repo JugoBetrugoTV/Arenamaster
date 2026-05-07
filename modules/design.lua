@@ -327,11 +327,11 @@ function Design:SetButtonStyle(button, themeName)
 	themeName = themeName or "Dark"
 	local theme = self:GetTheme(themeName)
 
-	if button:SetNormalFontObject then
+	if button.SetNormalFontObject then
 		button:SetNormalFontObject(GameFontNormalLarge)
 	end
 
-	if button:SetHighlightFontObject then
+	if button.SetHighlightFontObject then
 		button:SetHighlightFontObject(GameFontHighlightLarge)
 	end
 end

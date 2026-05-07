@@ -8,8 +8,10 @@ local ADDON_VERSION = "2.0.0-Ace3"
 local Arenamaster = LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceEvent-3.0", "AceTimer-3.0", "AceConsole-3.0")
 local AceDB = LibStub("AceDB-3.0")
 local AceConfig = LibStub("AceConfig-3.0")
-local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
+
+-- AceConfigDialog is loaded later to avoid dependency issues
+local AceConfigDialog
 
 -- ===========================
 -- ADDON DEFAULTS
@@ -90,6 +92,13 @@ end
 -- SLASH COMMANDS
 -- ===========================
 
+function Arenamaster:GetAceConfigDialog()
+	if not AceConfigDialog then
+		AceConfigDialog = LibStub("AceConfigDialog-3.0", true)
+	end
+	return AceConfigDialog
+end
+
 function Arenamaster:SetupOptions()
 	local options = {
 		name = ADDON_NAME,
@@ -101,7 +110,10 @@ function Arenamaster:SetupOptions()
 				desc = "Open configuration",
 				type = 'execute',
 				func = function()
-					AceConfigDialog:Open(ADDON_NAME)
+					local dialog = Arenamaster:GetAceConfigDialog()
+					if dialog then
+						dialog:Open(ADDON_NAME)
+					end
 				end
 			},
 			stats = {
@@ -136,7 +148,11 @@ function Arenamaster:SetupOptions()
 	}
 
 	AceConfig:RegisterOptionsTable(ADDON_NAME, options)
-	AceConfigDialog:AddToBlizOptions(ADDON_NAME, ADDON_NAME)
+
+	local dialog = self:GetAceConfigDialog()
+	if dialog then
+		dialog:AddToBlizOptions(ADDON_NAME, ADDON_NAME)
+	end
 
 	self:RegisterChatCommand("am", "HandleChatCommand")
 	self:RegisterChatCommand("arenamaster", "HandleChatCommand")
@@ -151,11 +167,17 @@ function Arenamaster:HandleChatCommand(input)
 		if ConfigUI then
 			ConfigUI:ShowConfigWindow()
 		else
-			AceConfigDialog:Open(ADDON_NAME)
+			local dialog = self:GetAceConfigDialog()
+			if dialog then
+				dialog:Open(ADDON_NAME)
+			end
 		end
 	elseif input == "advanced" then
 		-- Open advanced options
-		AceConfigDialog:Open(ADDON_NAME)
+		local dialog = self:GetAceConfigDialog()
+		if dialog then
+			dialog:Open(ADDON_NAME)
+		end
 	elseif input == "export" then
 		-- Export settings
 		local ConfigAdvanced = self:GetModule("ConfigAdvanced")
