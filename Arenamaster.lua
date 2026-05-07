@@ -40,6 +40,8 @@ function AM:Initialize()
     self.ThreatDetector:Initialize()
     self.CooldownPredictor:Initialize()
     self.CombatAnalytics:Initialize()
+    self.SmartNotifications:Initialize()
+    self.ArenaMap:Initialize()
 
     -- UI erstellen
     self:CreateUI()
