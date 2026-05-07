@@ -5,7 +5,6 @@ local Arenamaster = LibStub("AceAddon-3.0"):GetAddon("Arenamaster")
 local Ace3Config = Arenamaster:NewModule("Ace3Config", "AceEvent-3.0")
 
 local AceConfig = LibStub("AceConfig-3.0")
-local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 
 -- ===========================
@@ -85,8 +84,13 @@ function Ace3Config:OnInitialize()
 		return self:GetOptionsTable()
 	end)
 
-	-- Add to Blizzard options
-	AceConfigDialog:AddToBlizOptions("Arenamaster", "Arenamaster")
+	-- Add to Blizzard options (optional)
+	local AceConfigDialog = LibStub("AceConfigDialog-3.0", true)
+	if AceConfigDialog then
+		pcall(function()
+			AceConfigDialog:AddToBlizOptions("Arenamaster", "Arenamaster")
+		end)
+	end
 end
 
 function Ace3Config:OnEnable()

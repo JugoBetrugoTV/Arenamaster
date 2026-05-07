@@ -23,14 +23,14 @@ modules/features.lua
 modules/featureconfig.lua
 
 ## TIER 1: UI & Configuration (Depends on Tier 0)
-# DISABLED: ace3config.lua (library loading issue)
+modules/ace3config.lua
 modules/configui.lua
 modules/configadvanced.lua
 modules/dashboard.lua
 modules/auratracker.lua
 modules/enemyframes.lua
 modules/minimap.lua
-# DISABLED: arenaintelligence-config.lua (library loading issue)
+modules/arenaintelligence-config.lua
 
 ## TIER 2: Analysis & Detection (Depends on Tier 0-1)
 # DISABLED: threat.lua (WoW taint system incompatibility - 2018+ errors)

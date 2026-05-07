@@ -5,7 +5,6 @@ local Arenamaster = LibStub("AceAddon-3.0"):GetAddon("Arenamaster")
 local ConfigUI = Arenamaster:NewModule("ConfigUI", "AceEvent-3.0")
 
 local AceGUI = LibStub("AceGUI-3.0")
-local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
 local mainFrame = nil
 local presetButtons = {}
@@ -242,7 +241,12 @@ function ConfigUI:CreateBeautifulConfigWindow()
 	advancedBtn:SetText("🔧 Advanced Options")
 	advancedBtn:SetWidth(200)
 	advancedBtn:SetCallback("OnClick", function()
-		AceConfigDialog:Open("Arenamaster")
+		local ConfigAdvanced = Arenamaster:GetModule("ConfigAdvanced")
+		if ConfigAdvanced and ConfigAdvanced.ShowAdvancedOptions then
+			ConfigAdvanced:ShowAdvancedOptions()
+		else
+			print("|cff4dabf7Arenamaster|r - Advanced options not available")
+		end
 		if mainFrame then
 			mainFrame:Hide()
 		end

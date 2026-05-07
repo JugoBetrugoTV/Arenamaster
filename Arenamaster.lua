@@ -100,11 +100,26 @@ function Arenamaster:GetAceConfigDialog()
 end
 
 function Arenamaster:SetupOptions()
+	-- Basic options - detailed config is handled by ConfigUI module
 	local options = {
 		name = ADDON_NAME,
 		handler = Arenamaster,
 		type = 'group',
 		args = {
+			openConfig = {
+				name = "Open Configuration",
+				desc = "Open the beautiful configuration interface",
+				type = 'execute',
+				func = function()
+					local ConfigUI = Arenamaster:GetModule("ConfigUI")
+					if ConfigUI then
+						ConfigUI:ShowConfigWindow()
+					else
+						print("|cff4dabf7Arenamaster|r - ConfigUI not available")
+					end
+				end,
+				order = 1,
+			},
 			general = {
 				name = "🎮 General",
 				type = 'group',

@@ -5,7 +5,6 @@ local Arenamaster = LibStub("AceAddon-3.0"):GetAddon("Arenamaster")
 local ArenaIntelligenceConfig = Arenamaster:NewModule("ArenaIntelligenceConfig", "AceEvent-3.0")
 
 local AceConfig = LibStub("AceConfig-3.0")
-local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
 -- ===========================
 -- INITIALIZATION
@@ -80,8 +79,11 @@ function ArenaIntelligenceConfig:RegisterOptions()
 		AceConfig:RegisterOptionsTable("Arenamaster_ArenaIntelligence", optionsTable)
 	end
 
+	local AceConfigDialog = LibStub("AceConfigDialog-3.0", true)
 	if AceConfigDialog then
-		AceConfigDialog:AddToBlizOptions("Arenamaster_ArenaIntelligence", "⚔️ Arena Intelligence", "Arenamaster")
+		pcall(function()
+			AceConfigDialog:AddToBlizOptions("Arenamaster_ArenaIntelligence", "⚔️ Arena Intelligence", "Arenamaster")
+		end)
 	end
 end
 
